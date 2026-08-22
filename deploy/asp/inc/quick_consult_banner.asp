@@ -1,7 +1,7 @@
 <!-- 빠른상담 하단 고정 배너 (순천 조례동 아이파크 · 엘리트공인중개사사무소)
-     사용법: 각 페이지 </body> 직전에 아래 한 줄로 포함
-     <!--#include virtual="/inc/quick_consult_banner.asp"-->
-     (site root가 다르면 virtual 대신 file="../inc/quick_consult_banner.asp" 상대경로로 조정)
+     배치 위치: D:\Jboard\web\inc\quick_consult_banner.asp (main.asp와 같은 폴더)
+     사용법: main.asp의 </body> 직전에 아래 한 줄 추가
+     <!--#include file="quick_consult_banner.asp"-->
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -161,7 +161,7 @@
       message: '',
       consent: consent.checked ? '1' : '0'
     });
-    fetch('/consult_proc.asp', {
+    fetch('/web/inc/consult_proc.asp', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: body.toString()
