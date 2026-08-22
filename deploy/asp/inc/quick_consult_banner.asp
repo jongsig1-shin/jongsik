@@ -40,6 +40,14 @@
   #qcSheet.open { transform: translateY(0); }
 
   .qc-grip { width: 36px; height: 4px; background: #d8dbe4; border-radius: 999px; margin: 4px auto 14px; }
+  .qc-qr-block {
+    display: flex; align-items: center; gap: 12px;
+    background: #f6f6f6; border-radius: 12px; padding: 10px 14px; margin-bottom: 16px;
+  }
+  .qc-qr-block img { border-radius: 6px; flex-shrink: 0; }
+  .qc-qr-text { display: flex; flex-direction: column; gap: 2px; }
+  .qc-qr-text b { font-size: 13px; color: #17233d; }
+  .qc-qr-text span { font-size: 11.5px; color: #6b7280; line-height: 1.5; }
   #qcSheet h3 { font-size: 18px; margin: 0 0 4px; color: #17233d; }
   #qcSheet .qc-sub { font-size: 12.5px; color: #6b7280; margin: 0 0 18px; line-height: 1.6; }
 
@@ -79,6 +87,14 @@
 <div id="qcBackdrop"></div>
 <div id="qcSheet">
   <div class="qc-grip"></div>
+  <div class="qc-qr-block">
+    <img src="data:image/png;base64,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" alt="빠른상담 신청 QR코드" width="72" height="72">
+    <div class="qc-qr-text">
+      <b>QR로도 신청 가능</b>
+      <span>스캔하면 이 상담 신청 화면이 바로 열립니다</span>
+    </div>
+  </div>
+
   <div id="qcFormBody">
     <h3>빠른상담 신청</h3>
     <p class="qc-sub">순천 조례동 아이파크 전문 상담 · 엘리트공인중개사사무소<br>이름과 연락처만 남겨주시면 순차적으로 회신드립니다.</p>
@@ -183,5 +199,10 @@
         submitBtn.disabled = false;
       });
   });
+
+  // QR로 접속(?quickconsult=1)한 경우 자동으로 상담 신청 팝업을 엽니다
+  if (location.search.indexOf('quickconsult=1') !== -1) {
+    openSheet();
+  }
 })();
 </script>
