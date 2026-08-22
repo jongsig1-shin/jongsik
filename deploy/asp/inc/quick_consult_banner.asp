@@ -1,7 +1,7 @@
-<!-- ë¹ ë¥¸ìƒë‹´ í•˜ë‹¨ ê³ ì • ë°°ë„ˆ (ìˆœì²œ ì¡°ë¡€ë™ ì•„ì´íŒŒí¬ Â· ì—˜ë¦¬íŠ¸ê³µì¸ì¤‘ê°œì‚¬ì‚¬ë¬´ì†Œ)
-     ì‚¬ìš©ë²•: ê° íŽ˜ì´ì§€ </body> ì§ì „ì— ì•„ëž˜ í•œ ì¤„ë¡œ í¬í•¨
+<!-- ºü¸¥»ó´ã ÇÏ´Ü °íÁ¤ ¹è³Ê (¼øÃµ Á¶·Êµ¿ ¾ÆÀÌÆÄÅ© ¡¤ ¿¤¸®Æ®°øÀÎÁß°³»ç»ç¹«¼Ò)
+     »ç¿ë¹ý: °¢ ÆäÀÌÁö </body> Á÷Àü¿¡ ¾Æ·¡ ÇÑ ÁÙ·Î Æ÷ÇÔ
      <!--#include virtual="/inc/quick_consult_banner.asp"-->
-     (site rootê°€ ë‹¤ë¥´ë©´ virtual ëŒ€ì‹  file="../inc/quick_consult_banner.asp" ìƒëŒ€ê²½ë¡œë¡œ ì¡°ì •)
+     (site root°¡ ´Ù¸£¸é virtual ´ë½Å file="../inc/quick_consult_banner.asp" »ó´ë°æ·Î·Î Á¶Á¤)
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,55 +71,55 @@
   #qcSuccess p { margin: 0 0 18px; font-size: 12.5px; color: #6b7280; line-height: 1.6; }
   #qcSuccess button { border: 1px solid #d8dbe4; background: transparent; color: #17233d; padding: 10px 22px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; }
   #qcFormBody.hide { display: none; }
-  body { padding-bottom: 60px; } /* í•˜ë‹¨ ê³ ì •ë°”ì— ì½˜í…ì¸  ê°€ë¦¬ì§€ ì•Šë„ë¡ */
+  body { padding-bottom: 60px; } /* ÇÏ´Ü °íÁ¤¹Ù¿¡ ÄÜÅÙÃ÷ °¡¸®Áö ¾Êµµ·Ï */
 </style>
 
 <div id="qcBackdrop"></div>
 <div id="qcSheet">
   <div class="qc-grip"></div>
   <div id="qcFormBody">
-    <h3>ë¹ ë¥¸ìƒë‹´ ì‹ ì²­</h3>
-    <p class="qc-sub">ìˆœì²œ ì¡°ë¡€ë™ ì•„ì´íŒŒí¬ ì „ë¬¸ ìƒë‹´ Â· ì—˜ë¦¬íŠ¸ê³µì¸ì¤‘ê°œì‚¬ì‚¬ë¬´ì†Œ<br>ì´ë¦„ê³¼ ì—°ë½ì²˜ë§Œ ë‚¨ê²¨ì£¼ì‹œë©´ ìˆœì°¨ì ìœ¼ë¡œ íšŒì‹ ë“œë¦½ë‹ˆë‹¤.</p>
+    <h3>ºü¸¥»ó´ã ½ÅÃ»</h3>
+    <p class="qc-sub">¼øÃµ Á¶·Êµ¿ ¾ÆÀÌÆÄÅ© Àü¹® »ó´ã ¡¤ ¿¤¸®Æ®°øÀÎÁß°³»ç»ç¹«¼Ò<br>ÀÌ¸§°ú ¿¬¶ôÃ³¸¸ ³²°ÜÁÖ½Ã¸é ¼øÂ÷ÀûÀ¸·Î È¸½Åµå¸³´Ï´Ù.</p>
     <div class="qc-field">
-      <label for="qcName">ì´ë¦„<span class="qc-req">*</span></label>
-      <input id="qcName" type="text" placeholder="í™ê¸¸ë™" autocomplete="name" />
+      <label for="qcName">ÀÌ¸§<span class="qc-req">*</span></label>
+      <input id="qcName" type="text" placeholder="È«±æµ¿" autocomplete="name" />
     </div>
     <div class="qc-field">
-      <label for="qcPhone">ì—°ë½ì²˜<span class="qc-req">*</span></label>
+      <label for="qcPhone">¿¬¶ôÃ³<span class="qc-req">*</span></label>
       <input id="qcPhone" type="tel" placeholder="010-0000-0000" autocomplete="tel" />
     </div>
     <div class="qc-field">
-      <label for="qcUnit">ê´€ì‹¬ í‰í˜• (ì„ íƒ)</label>
+      <label for="qcUnit">°ü½É ÆòÇü (¼±ÅÃ)</label>
       <select id="qcUnit">
-        <option value="">ì„ íƒ ì•ˆ í•¨</option>
-        <option value="84ãŽ¡">ì „ìš© 84ãŽ¡</option>
-        <option value="85ãŽ¡ì´ˆê³¼">ì „ìš© 85ãŽ¡ì´ˆê³¼</option>
+        <option value="">¼±ÅÃ ¾È ÇÔ</option>
+        <option value="84§³">Àü¿ë 84§³</option>
+        <option value="85§³ÃÊ°ú">Àü¿ë 85§³ÃÊ°ú</option>
       </select>
     </div>
     <label class="qc-consent">
       <input type="checkbox" id="qcConsent" />
-      <span>ê°œì¸ì •ë³´ ìˆ˜ì§‘Â·ì´ìš©ì— ë™ì˜í•©ë‹ˆë‹¤ (í•„ìˆ˜) â€” ìƒë‹´ ëª©ì  ì™¸ ì‚¬ìš©í•˜ì§€ ì•Šìœ¼ë©° ìƒë‹´ ì™„ë£Œ í›„ íŒŒê¸°ë©ë‹ˆë‹¤. <a href="/privacy.asp">ì•½ê´€ ë³´ê¸°</a></span>
+      <span>°³ÀÎÁ¤º¸ ¼öÁý¡¤ÀÌ¿ë¿¡ µ¿ÀÇÇÕ´Ï´Ù (ÇÊ¼ö) - »ó´ã ¸ñÀû ¿Ü »ç¿ëÇÏÁö ¾ÊÀ¸¸ç »ó´ã ¿Ï·á ÈÄ ÆÄ±âµË´Ï´Ù. <a href="/privacy.asp">¾à°ü º¸±â</a></span>
     </label>
-    <button id="qcSubmit" disabled>ìƒë‹´ ì‹ ì²­í•˜ê¸°</button>
+    <button id="qcSubmit" disabled>»ó´ã ½ÅÃ»ÇÏ±â</button>
   </div>
   <div id="qcSuccess">
     <div class="qc-tick">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#2c6e4f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
     </div>
-    <h3>ì‹ ì²­ì´ ì ‘ìˆ˜ë˜ì—ˆìŠµë‹ˆë‹¤</h3>
-    <p>ì˜ì—…ì¼ ê¸°ì¤€ 1ì¼ ì´ë‚´ ìƒë‹´ì›ì´ ìˆœì°¨ ì—°ë½ë“œë¦½ë‹ˆë‹¤.</p>
-    <button id="qcCloseSuccess">ë‹«ê¸°</button>
+    <h3>½ÅÃ»ÀÌ Á¢¼öµÇ¾ú½À´Ï´Ù</h3>
+    <p>¿µ¾÷ÀÏ ±âÁØ 1ÀÏ ÀÌ³» »ó´ã¿øÀÌ ¼øÂ÷ ¿¬¶ôµå¸³´Ï´Ù.</p>
+    <button id="qcCloseSuccess">´Ý±â</button>
   </div>
 </div>
 
 <div id="qcBar">
   <a id="qcCall" href="tel:010-7175-2700">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-    ì „í™”ìƒë‹´
+    ÀüÈ­»ó´ã
   </a>
   <button id="qcOpen" type="button">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    ë¹ ë¥¸ìƒë‹´ ì‹ ì²­
+    ºü¸¥»ó´ã ½ÅÃ»
   </button>
 </div>
 
@@ -172,12 +172,12 @@
           formBody.classList.add('hide');
           success.classList.add('show');
         } else {
-          alert(data.error || 'ì‹ ì²­ ì¤‘ ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤. ìž ì‹œ í›„ ë‹¤ì‹œ ì‹œë„í•´ì£¼ì„¸ìš”.');
+          alert(data.error || '½ÅÃ» Áß ¿À·ù°¡ ¹ß»ýÇß½À´Ï´Ù. Àá½Ã ÈÄ ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä.');
           submitBtn.disabled = false;
         }
       })
       .catch(function () {
-        alert('ë„¤íŠ¸ì›Œí¬ ì˜¤ë¥˜ë¡œ ì‹ ì²­ì— ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤. ì „í™”ìƒë‹´ì„ ì´ìš©í•´ì£¼ì„¸ìš”.');
+        alert('³×Æ®¿öÅ© ¿À·ù·Î ½ÅÃ»¿¡ ½ÇÆÐÇß½À´Ï´Ù. ÀüÈ­»ó´ãÀ» ÀÌ¿ëÇØÁÖ¼¼¿ä.');
         submitBtn.disabled = false;
       });
   });

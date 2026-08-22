@@ -1,6 +1,7 @@
--- 빠른상담 신청 저장용 SQL Server 계정 + 테이블 생성 스크립트
--- SSMS 또는 sqlcmd로 sa 계정으로 접속해서 직접 실행하세요.
--- <새비밀번호>, <실제DB이름> 은 실제 값으로 반드시 교체하세요.
+﻿-- 빠른상담 신청 저장용 SQL Server 계정 + 테이블 생성 스크립트
+-- SSMS에서 이 파일을 열 때 "파일 - 다른 이름으로 저장 안 함" 상태(원본 그대로) UTF-8로 열려야
+-- 아래 한글 주석/문자열이 깨지지 않습니다. 실행은 sa 계정으로 접속해서 하세요.
+-- <새비밀번호> 는 실제 값으로 반드시 교체하세요. (DB명은 sinsung으로 고정)
 
 USE [master];
 GO
@@ -9,8 +10,8 @@ GO
 CREATE LOGIN [sinsung_consult] WITH PASSWORD = N'<새비밀번호>', CHECK_POLICY = ON;
 GO
 
--- 2) 실제 운영 DB 이름으로 교체 후 실행
-USE [<실제DB이름>];
+-- 2) 운영 DB로 전환
+USE [sinsung];
 GO
 
 CREATE USER [sinsung_consult] FOR LOGIN [sinsung_consult];
