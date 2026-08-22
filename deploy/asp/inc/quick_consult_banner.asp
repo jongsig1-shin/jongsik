@@ -48,8 +48,10 @@
   .qc-field label .qc-req { color: #b0392c; margin-left: 2px; }
   .qc-field input, .qc-field select {
     width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid #d8dbe4;
-    background: #f6f6f6; font-size: 14px; font-family: inherit;
+    background: #f6f6f6; color: #17233d; font-size: 14px; font-family: inherit;
   }
+  .qc-field select option { color: #17233d; background: #ffffff; }
+  .qc-field input::placeholder { color: #9aa0ab; }
   .qc-field input:focus, .qc-field select:focus { outline: 2px solid #b9862f; outline-offset: 1px; }
 
   .qc-consent { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: #6b7280; margin: 16px 0 14px; line-height: 1.55; }
