@@ -1,7 +1,7 @@
 <!-- 빠른상담 하단 고정 배너 (순천 조례동 아이파크 · 엘리트공인중개사사무소)
      배치 위치: D:\Jboard\web\inc\quick_consult_banner.asp (main.asp와 같은 폴더)
-     사용법: main.asp 맨 아래, bottom.asp include 바로 위에 아래 한 줄 추가
-     <!-- #include virtual="/web/inc/quick_consult_banner.asp" -->
+     사용법은 이 파일 밖 별도 안내 참고 (SSI include 예시 문구를 이 파일 안에 적으면
+     순환 include 오류가 나서 여기서는 절대 적지 않음)
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
