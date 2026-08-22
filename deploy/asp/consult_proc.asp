@@ -3,11 +3,28 @@
 ' 빠른상담 신청 처리 스크립트 (이 파일은 UTF-8로 저장 — 위 CODEPAGE 지시자와 반드시 세트로 유지)
 ' 배치 위치: D:\Jboard\web\inc\consult_proc.asp (main.asp와 같은 폴더)
 ' <서버주소>, <새비밀번호> 는 01_setup_consult.sql에서 만든 값과 동일하게 교체하세요. (DB명은 sinsung으로 반영됨)
+'
+' 출력은 Response.Write 대신 ADODB.Stream으로 UTF-8 바이트를 직접 써서 내보냅니다.
+' (사이트/서버의 기본 코드페이지 설정과 무관하게 항상 정확한 UTF-8이 나가도록 하기 위함)
 
-Response.CodePage = 65001
-Response.CharSet = "utf-8"
 Response.Buffer = True
-Response.ContentType = "application/json; charset=utf-8"
+Response.ContentType = "application/json"
+Response.CharSet = "utf-8"
+
+Sub WriteUTF8(text)
+    Dim stream
+    Set stream = Server.CreateObject("ADODB.Stream")
+    stream.Type = 2 ' adTypeText
+    stream.Charset = "utf-8"
+    stream.Open
+    stream.WriteText text
+    stream.Position = 0
+    stream.Type = 1 ' adTypeBinary
+    stream.Position = 3 ' UTF-8 BOM(3바이트) 건너뛰기
+    Response.BinaryWrite stream.Read
+    stream.Close
+    Set stream = Nothing
+End Sub
 
 Dim reqName, reqPhone, reqUnit, reqMessage, reqConsent
 reqName    = Trim(Request.Form("name"))
@@ -19,7 +36,7 @@ reqConsent = Trim(Request.Form("consent"))
 ' 서버단 필수값 검증 (프론트 검증만 믿지 않음)
 If reqName = "" Or reqPhone = "" Or reqConsent <> "1" Then
     Response.Status = "400 Bad Request"
-    Response.Write "{""ok"":false,""error"":""필수 항목이 누락되었습니다.""}"
+    WriteUTF8 "{""ok"":false,""error"":""필수 항목이 누락되었습니다.""}"
     Response.End
 End If
 
@@ -37,7 +54,7 @@ conn.Open "Provider=SQLOLEDB;Data Source=<서버주소>;Initial Catalog=sinsung;
 
 If Err.Number <> 0 Then
     Response.Status = "500 Internal Server Error"
-    Response.Write "{""ok"":false,""error"":""DB 연결 실패""}"
+    WriteUTF8 "{""ok"":false,""error"":""DB 연결 실패""}"
     Response.End
 End If
 
@@ -57,7 +74,7 @@ cmd.Execute
 
 If Err.Number <> 0 Then
     Response.Status = "500 Internal Server Error"
-    Response.Write "{""ok"":false,""error"":""저장 중 오류가 발생했습니다.""}"
+    WriteUTF8 "{""ok"":false,""error"":""저장 중 오류가 발생했습니다.""}"
     conn.Close
     Response.End
 End If
@@ -65,5 +82,5 @@ End If
 On Error Goto 0
 conn.Close
 
-Response.Write "{""ok"":true}"
+WriteUTF8 "{""ok"":true}"
 %>
