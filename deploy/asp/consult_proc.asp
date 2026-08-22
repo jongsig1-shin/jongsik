@@ -2,7 +2,7 @@
 <%
 ' 빠른상담 신청 처리 스크립트 (이 파일은 UTF-8로 저장 — 위 CODEPAGE 지시자와 반드시 세트로 유지)
 ' D:\Jboard 사이트 루트 바로 아래(혹은 원하는 폴더)에 배치하세요.
-' <서버주소>, <새비밀번호> 는 01_setup_consult.sql에서 만든 값으로 교체하세요. (DB명은 sinsung으로 반영됨)
+' <서버주소>, <새비밀번호> 는 01_setup_consult.sql에서 만든 값과 동일하게 교체하세요. (DB명은 sinsung으로 반영됨)
 
 Response.CodePage = 65001
 Response.CharSet = "utf-8"
