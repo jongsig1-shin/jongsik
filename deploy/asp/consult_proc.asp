@@ -10,6 +10,10 @@
 Response.Buffer = True
 Response.ContentType = "application/json"
 Response.CharSet = "utf-8"
+Response.Expires = -1
+Response.ExpiresAbsolute = Now() - 1
+Response.AddHeader "Cache-Control", "no-cache, no-store, must-revalidate"
+Response.AddHeader "Pragma", "no-cache"
 
 Sub WriteUTF8(text)
     Dim stream
