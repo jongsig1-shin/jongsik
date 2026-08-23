@@ -1,9 +1,10 @@
-<!-- 빠른상담 신청 목록 CSV 다운로드 (관리자 전용)
-     배치 위치: D:\Jboard\web\07admin\consult_export.asp
-     user_dbconn.asp에 이미 @ 지시자가 있어서 이 파일엔 별도로 넣지 않음(ASP 0141 방지) -->
-<!-- #include virtual="/data/db_conn/user_dbconn.asp" -->
-<!-- #include virtual="/Jsource/inc/adovbs.inc" -->
-<%
+<!-- #include virtual="/data/db_conn/user_dbconn.asp" --><!-- #include virtual="/Jsource/inc/adovbs.inc" --><%
+	' 빠른상담 신청 목록 CSV 다운로드 (관리자 전용)
+	' 배치 위치: D:\Jboard\web\07admin\consult_export.asp
+	' user_dbconn.asp에 이미 @ 지시자가 있어서 이 파일엔 별도로 넣지 않음(ASP 0141 방지)
+	' <% 밖의 텍스트/공백은 그대로 응답에 섞여 나가므로, 이 파일은 시작부터 끝까지 전부 <% %> 안에서만 작성함
+
+	Response.Buffer = True
 	' ---- 권한 체크: 관리자(1)·운영자(2)만 접근 가능 ----
 	Dim cookies_adID, cookies_meID
 	cookies_adID = request.cookies("admin")("ad_id")
