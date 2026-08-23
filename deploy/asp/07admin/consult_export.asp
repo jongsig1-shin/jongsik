@@ -1,9 +1,6 @@
-<%@ LANGUAGE="VBScript" CODEPAGE="65001" %>
-<%
-' 빠른상담 신청 목록 CSV 다운로드 (관리자 전용)
-' 배치 위치: D:\Jboard\web\07admin\consult_export.asp
-' 이 파일은 UTF-8로 저장 — 위 CODEPAGE 지시자와 반드시 세트로 유지
-%>
+<!-- 빠른상담 신청 목록 CSV 다운로드 (관리자 전용)
+     배치 위치: D:\Jboard\web\07admin\consult_export.asp
+     user_dbconn.asp에 이미 @ 지시자가 있어서 이 파일엔 별도로 넣지 않음(ASP 0141 방지) -->
 <!-- #include virtual="/data/db_conn/user_dbconn.asp" -->
 <!-- #include virtual="/Jsource/inc/adovbs.inc" -->
 <%
