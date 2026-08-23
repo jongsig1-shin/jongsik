@@ -38,7 +38,6 @@
 	End If
 
 	' ---- CSV 생성 ----
-	Response.Buffer = True
 	Response.ContentType = "text/csv"
 	Response.AddHeader "Content-Disposition", "attachment; filename=quick_consult.csv"
 
@@ -64,7 +63,17 @@
 	rsExp.close
 	Set rsExp = Nothing
 
-	' UTF-8 BOM(엑셀 한글 인식용) + CSV 본문을 일반 Response.Write로 출력
-	Response.CharSet = "utf-8"
-	Response.Write Chr(&HFEFF) & csvText
+	' UTF-8 BOM을 포함해서 내보내야 엑셀에서 한글이 정상적으로 보입니다.
+	' (이 Stream 방식은 이미 정상 동작 확인됨 — 인코딩 문제 없음)
+	Dim stream
+	Set stream = Server.CreateObject("ADODB.Stream")
+	stream.Type = 2
+	stream.Charset = "utf-8"
+	stream.Open
+	stream.WriteText csvText
+	stream.Position = 0
+	stream.Type = 1
+	Response.BinaryWrite stream.Read
+	stream.Close
+	Set stream = Nothing
 %>
