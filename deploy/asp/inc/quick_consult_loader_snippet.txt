@@ -1,0 +1,24 @@
+<!-- main.asp 맨 아래, bottom.asp include 바로 위에 아래 스크립트를 그대로 붙여넣으세요.
+     한글이 한 글자도 없는 순수 ASCII라 어떤 인코딩 환경에서도 깨지지 않습니다. -->
+<script>
+(function () {
+  var KEY = 'qcPopupHideUntil';
+  var hideUntil = localStorage.getItem(KEY);
+  if (hideUntil && Date.now() < parseInt(hideUntil, 10)) return;
+
+  var frame = document.createElement('iframe');
+  frame.src = '/web/inc/quick_consult_popup.html';
+  frame.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;border:0;z-index:99999;background:rgba(10,13,22,.55)';
+  document.body.appendChild(frame);
+
+  window.addEventListener('message', function (e) {
+    if (e.data === 'qc-popup-close') {
+      frame.parentNode.removeChild(frame);
+    } else if (e.data === 'qc-popup-hide-today') {
+      var until = Date.now() + 24 * 60 * 60 * 1000;
+      localStorage.setItem(KEY, String(until));
+      frame.parentNode.removeChild(frame);
+    }
+  });
+})();
+</script>
