@@ -2,7 +2,7 @@
 <%
 ' 빠른상담 신청 처리 스크립트 (이 파일은 UTF-8로 저장 — 위 CODEPAGE 지시자와 반드시 세트로 유지)
 ' 배치 위치: D:\Jboard\web\inc\consult_proc.asp (main.asp와 같은 폴더)
-' <서버주소>, <새비밀번호> 는 01_setup_consult.sql에서 만든 값과 동일하게 교체하세요. (DB명은 sinsung으로 반영됨)
+' <새비밀번호> 는 01_setup_consult.sql에서 만든 값과 동일하게 교체하세요. (DB명 sinsung, 서버 SIN-SUNG으로 반영됨)
 '
 ' 출력은 Response.Write 대신 ADODB.Stream으로 UTF-8 바이트를 직접 써서 내보냅니다.
 ' (사이트/서버의 기본 코드페이지 설정과 무관하게 항상 정확한 UTF-8이 나가도록 하기 위함)
@@ -54,7 +54,7 @@ Dim conn, cmd
 On Error Resume Next
 
 Set conn = Server.CreateObject("ADODB.Connection")
-conn.Open "Provider=SQLOLEDB;Data Source=<서버주소>;Initial Catalog=sinsung;User ID=sinsung_consult;Password=<새비밀번호>;"
+conn.Open "Provider=SQLOLEDB.1;Data Source=SIN-SUNG;Initial Catalog=sinsung;User ID=sinsung_consult;Password=<새비밀번호>;Persist Security Info=True;Auto Translate=False;"
 
 If Err.Number <> 0 Then
     Response.Status = "500 Internal Server Error"
