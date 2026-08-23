@@ -30,12 +30,13 @@ Sub WriteUTF8(text)
     Set stream = Nothing
 End Sub
 
-Dim reqName, reqPhone, reqUnit, reqMessage, reqConsent
+Dim reqName, reqPhone, reqUnit, reqMessage, reqConsent, reqSrc
 reqName    = Trim(Request.Form("name"))
 reqPhone   = Trim(Request.Form("phone"))
 reqUnit    = Trim(Request.Form("unit"))
 reqMessage = Trim(Request.Form("message"))
 reqConsent = Trim(Request.Form("consent"))
+reqSrc     = Trim(Request.Form("src"))
 
 ' 서버단 필수값 검증 (프론트 검증만 믿지 않음)
 If reqName = "" Or reqPhone = "" Or reqConsent <> "1" Then
@@ -49,6 +50,16 @@ If Len(reqName) > 50 Then reqName = Left(reqName, 50)
 If Len(reqPhone) > 20 Then reqPhone = Left(reqPhone, 20)
 If Len(reqUnit) > 30 Then reqUnit = Left(reqUnit, 30)
 If Len(reqMessage) > 500 Then reqMessage = Left(reqMessage, 500)
+If Len(reqSrc) > 30 Then reqSrc = Left(reqSrc, 30)
+
+' 유입경로: 인쇄물/QR로 들어온 경우 팝업 URL의 ?src= 값(예: flyer, banner)을 그대로 저장하고,
+' 없으면(홈페이지에서 자동으로 뜬 팝업) 이전 방식대로 이전 페이지 주소(Referer)를 저장합니다.
+Dim sourceInfo
+If reqSrc <> "" Then
+    sourceInfo = "qr:" & reqSrc
+Else
+    sourceInfo = Left(Request.ServerVariables("HTTP_REFERER"), 200)
+End If
 
 Dim conn, cmd
 On Error Resume Next
@@ -72,7 +83,7 @@ cmd.Parameters.Append cmd.CreateParameter("p_name",    200, 1, 50,  reqName)
 cmd.Parameters.Append cmd.CreateParameter("p_phone",   200, 1, 20,  reqPhone)
 cmd.Parameters.Append cmd.CreateParameter("p_unit",    200, 1, 30,  reqUnit)
 cmd.Parameters.Append cmd.CreateParameter("p_message", 200, 1, 500, reqMessage)
-cmd.Parameters.Append cmd.CreateParameter("p_source",  200, 1, 200, Left(Request.ServerVariables("HTTP_REFERER"), 200))
+cmd.Parameters.Append cmd.CreateParameter("p_source",  200, 1, 200, sourceInfo)
 
 cmd.Execute
 

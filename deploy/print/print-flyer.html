@@ -1,0 +1,199 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    width: 1748px; height: 2480px;
+    font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+    overflow: hidden;
+    background: #f5f6f5;
+  }
+  .page {
+    width: 1748px; height: 2480px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---- Top navy panel ---- */
+  .top {
+    position: relative;
+    background:
+      radial-gradient(120% 90% at 85% 0%, rgba(185,134,47,0.35), transparent 55%),
+      radial-gradient(90% 70% at 0% 100%, rgba(185,134,47,0.18), transparent 60%),
+      linear-gradient(155deg, #223257 0%, #17233d 55%, #0e1626 100%);
+    padding: 130px 110px 90px;
+    color: #fdfbf6;
+    overflow: hidden;
+  }
+  .top::before {
+    content: "";
+    position: absolute;
+    top: -140px; right: -140px;
+    width: 560px; height: 560px;
+    border: 2px solid rgba(217,168,74,0.28);
+    border-radius: 50%;
+  }
+  .top::after {
+    content: "";
+    position: absolute;
+    bottom: -200px; left: -100px;
+    width: 480px; height: 480px;
+    border: 2px solid rgba(217,168,74,0.18);
+    border-radius: 50%;
+  }
+  .rule { width: 96px; height: 6px; background: #d9a84a; margin-bottom: 34px; position: relative; z-index: 2; }
+  .tag {
+    display: inline-block; font-size: 26px; font-weight: 700; letter-spacing: 0.05em;
+    color: #f4e6c8; background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(244,230,200,0.35); padding: 10px 26px; border-radius: 999px;
+    margin-bottom: 38px; position: relative; z-index: 2;
+  }
+  .title {
+    font-family: "Noto Serif KR", serif; font-weight: 900; font-size: 96px; line-height: 1.22;
+    margin: 0 0 22px; position: relative; z-index: 2; letter-spacing: -0.01em;
+  }
+  .sub {
+    font-size: 34px; color: #cdd4e4; margin: 0 0 40px; position: relative; z-index: 2; font-weight: 500;
+  }
+  .sub b { color: #f4e6c8; font-weight: 700; }
+  .chips { display: flex; gap: 18px; flex-wrap: wrap; position: relative; z-index: 2; }
+  .chip {
+    font-size: 27px; font-weight: 700; color: #f4e6c8;
+    border: 1px solid rgba(217,168,74,0.55); padding: 12px 26px; border-radius: 999px;
+  }
+
+  /* ---- QR / CTA block ---- */
+  .mid {
+    flex: 1;
+    background: #ffffff;
+    padding: 90px 110px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .qr-card {
+    width: 100%;
+    background: linear-gradient(135deg, #e6c374 0%, #c6963a 60%, #b3852d 100%);
+    border-radius: 40px;
+    padding: 56px 64px;
+    display: flex;
+    align-items: center;
+    gap: 48px;
+    box-shadow: 0 30px 60px -24px rgba(23,35,61,0.45);
+  }
+  .qr-card img {
+    width: 300px; height: 300px;
+    border-radius: 20px;
+    background: #fff;
+    padding: 14px;
+    flex-shrink: 0;
+  }
+  .qr-text h2 { margin: 0 0 14px; font-size: 52px; font-weight: 900; color: #1c1206; letter-spacing: -0.01em; }
+  .qr-text p { margin: 0; font-size: 26px; font-weight: 600; color: #4a3612; line-height: 1.5; }
+
+  .units {
+    width: 100%;
+    display: flex;
+    gap: 32px;
+    margin-top: 64px;
+  }
+  .unit-box {
+    flex: 1;
+    border: 2px solid #e3e0d5;
+    border-radius: 24px;
+    padding: 40px 36px;
+    text-align: center;
+  }
+  .unit-box .label { font-size: 24px; font-weight: 700; color: #9a8a5f; margin-bottom: 12px; letter-spacing: 0.03em; }
+  .unit-box .value { font-size: 48px; font-weight: 900; color: #17233d; font-family: "Noto Serif KR", serif; }
+
+  .note {
+    margin-top: 56px;
+    font-size: 24px;
+    color: #8b8b8b;
+    text-align: center;
+    line-height: 1.7;
+  }
+
+  /* ---- Bottom brand bar ---- */
+  .bottom {
+    background: #ffffff;
+    padding: 56px 110px 96px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 2px solid #e3e0d5;
+  }
+  .brand-name { font-family: "Noto Serif KR", serif; font-size: 46px; font-weight: 700; color: #17233d; margin: 0 0 12px; }
+  .brand-name b { color: #b9862f; }
+  .brand-tag { font-size: 24px; color: #6b7280; font-weight: 500; }
+  .phone-block { text-align: right; }
+  .phone {
+    display: flex; align-items: center; gap: 14px; justify-content: flex-end;
+    font-size: 52px; font-weight: 900; color: #17233d; font-variant-numeric: tabular-nums; margin-bottom: 8px;
+  }
+  .phone svg { width: 40px; height: 40px; color: #b9862f; }
+  .phone-caption { font-size: 22px; color: #9a8a5f; font-weight: 700; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="top">
+      <div class="rule"></div>
+      <span class="tag">I PARK · 현대산업개발 도급</span>
+      <h1 class="title">순천 조례동<br>아이파크</h1>
+      <p class="sub">전남 순천시 조례동 일원 · <b>683세대</b> · <b>2029년 하반기</b> 준공목표</p>
+      <div class="chips">
+        <span class="chip">전용 84 · 85㎡초과</span>
+        <span class="chip">KTX·SRT 순천역 인근</span>
+        <span class="chip">순천IC 인근</span>
+      </div>
+    </div>
+
+    <div class="mid">
+      <div class="qr-card">
+        <img src="data:image/png;base64,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" alt="빠른상담 신청 QR코드">
+        <div class="qr-text">
+          <h2>QR 스캔으로<br>빠른상담 신청</h2>
+          <p>휴대폰 카메라로 QR코드를 비추면<br>상담 신청 화면이 바로 열립니다</p>
+        </div>
+      </div>
+
+      <div class="units">
+        <div class="unit-box">
+          <div class="label">관심 평형</div>
+          <div class="value">전용 84㎡</div>
+        </div>
+        <div class="unit-box">
+          <div class="label">관심 평형</div>
+          <div class="value">85㎡초과</div>
+        </div>
+      </div>
+
+      <p class="note">본 전단지는 정보 제공을 위한 홍보물이며, 계약 조건 등 세부 사항은<br>담당 공인중개사와의 상담을 통해 확인하시기 바랍니다.</p>
+    </div>
+
+    <div class="bottom">
+      <div>
+        <div class="brand-name"><b>엘리트</b>공인중개사사무소</div>
+        <div class="brand-tag">순천 조례동 일원 전문 상담 · 한국공인중개사협회 순천시지회 회원</div>
+      </div>
+      <div class="phone-block">
+        <div class="phone">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+          </svg>
+          010-7175-2700
+        </div>
+        <div class="phone-caption">엘리트공인중개사사무소</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

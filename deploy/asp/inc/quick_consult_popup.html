@@ -193,6 +193,11 @@
   }
   [nameInput, phoneInput, consent].forEach(function (el) { el.addEventListener('input', validate); });
 
+  function getSrcParam() {
+    var m = window.location.search.match(/[?&]src=([^&]+)/);
+    return m ? decodeURIComponent(m[1]) : '';
+  }
+
   submitBtn.addEventListener('click', function () {
     submitBtn.disabled = true;
     var body = new URLSearchParams({
@@ -200,7 +205,8 @@
       phone: phoneInput.value.trim(),
       unit: unitSelect.value,
       message: '',
-      consent: consent.checked ? '1' : '0'
+      consent: consent.checked ? '1' : '0',
+      src: getSrcParam()
     });
     fetch('/web/inc/consult_proc.asp', {
       method: 'POST',
