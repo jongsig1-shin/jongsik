@@ -12,10 +12,8 @@
 	<section>
 		<h2>빠른상담 신청 목록</h2>
 
-		<!-- #include virtual="/data/db_conn/user_dbconn.asp" -->
-		<!-- #include virtual="/Jsource/inc/adovbs.inc" -->
-
 		<%
+			' db 연결과 ad* 상수는 top.asp 체인에서 이미 로드되어 있어 다시 include하지 않음(ASP 0141 방지)
 			' ---- 권한 체크: 관리자(1)·운영자(2)만 접근 가능 ----
 			Dim cookies_adID, cookies_meID
 			cookies_adID = request.cookies("admin")("ad_id")
