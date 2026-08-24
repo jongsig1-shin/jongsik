@@ -37,9 +37,39 @@
 		Response.End
 	End If
 
+	' ---- 기간 필터 (yyyy-mm-dd) — IsDate로 검증 후 Year/Month/Day로 재조립해서
+	'      숫자/하이픈만 SQL 문자열에 들어가도록 하여 SQL 인젝션 여지를 없앰 ----
+	Function SafeDateParam(s)
+		SafeDateParam = ""
+		If s <> "" And IsDate(s) Then
+			Dim d
+			d = CDate(s)
+			SafeDateParam = Year(d) & "-" & Right("0" & Month(d), 2) & "-" & Right("0" & Day(d), 2)
+		End If
+	End Function
+
+	Dim qFrom, qTo
+	qFrom = SafeDateParam(Request.QueryString("from"))
+	qTo   = SafeDateParam(Request.QueryString("to"))
+
+	Dim sql, whereSql
+	whereSql = ""
+	If qFrom <> "" Then whereSql = whereSql & " AND RequestedAt >= '" & qFrom & "'"
+	If qTo   <> "" Then whereSql = whereSql & " AND RequestedAt < DATEADD(day, 1, '" & qTo & "')"
+
+	sql = "SELECT RequestedAt, Name, Phone, UnitType, Message, SourcePage, Status FROM dbo.QuickConsult"
+	If whereSql <> "" Then sql = sql & " WHERE " & Mid(whereSql, 6) ' 맨 앞의 " AND " 제거
+	sql = sql & " ORDER BY RequestedAt DESC"
+
 	' ---- CSV 생성 ----
 	Response.ContentType = "text/csv"
-	Response.AddHeader "Content-Disposition", "attachment; filename=quick_consult.csv"
+	Dim csvFileName
+	If qFrom <> "" Or qTo <> "" Then
+		csvFileName = "quick_consult_" & qFrom & "_" & qTo & ".csv"
+	Else
+		csvFileName = "quick_consult.csv"
+	End If
+	Response.AddHeader "Content-Disposition", "attachment; filename=" & csvFileName
 
 	Function CsvEsc(v)
 		v = CStr(v & "")
@@ -51,7 +81,7 @@
 	csvText = "신청일시,이름,연락처,관심평형,문의내용,유입페이지,상태" & vbCrLf
 
 	Set rsExp = Server.CreateObject("ADODB.Recordset")
-	rsExp.Open "SELECT RequestedAt, Name, Phone, UnitType, Message, SourcePage, Status FROM dbo.QuickConsult ORDER BY RequestedAt DESC", db, 0, 1
+	rsExp.Open sql, db, 0, 1
 
 	Do While Not rsExp.eof
 		csvText = csvText & CsvEsc(rsExp("RequestedAt")) & "," & CsvEsc(rsExp("Name")) & "," &_

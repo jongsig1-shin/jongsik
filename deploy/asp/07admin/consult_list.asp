@@ -45,6 +45,16 @@
 				Response.End
 			End If
 
+			' ---- 페이지 번호 (15건씩) ----
+			Const PAGE_SIZE = 15
+			Dim pageNum
+			pageNum = Request.QueryString("page")
+			If Not IsNumeric(pageNum) Or CLng(pageNum) < 1 Then
+				pageNum = 1
+			Else
+				pageNum = CLng(pageNum)
+			End If
+
 			' ---- 처리완료 토글 ----
 			Dim actId
 			actId = Request.QueryString("done")
@@ -57,13 +67,77 @@
 				End With
 				cmdUpd.Execute , , adCmdText + adExecuteNoRecords
 				Set cmdUpd = Nothing
-				Response.Redirect "consult_list.asp?ji_num=10"
+				Response.Redirect "consult_list.asp?ji_num=10&page=" & pageNum
 			End If
+
+			' ---- 삭제 (완료된 건만 허용 — 서버단에서도 Status=완료 조건을 같이 검사) ----
+			Dim delId
+			delId = Request.QueryString("del")
+			If delId <> "" And IsNumeric(delId) Then
+				Set cmdDel = Server.CreateObject("ADODB.Command")
+				With cmdDel
+					.ActiveConnection = db
+					.CommandText = "DELETE FROM dbo.QuickConsult WHERE Id=? AND Status=N'완료'"
+					.Parameters.Append .CreateParameter("p_id", 3, 1, , CLng(delId))
+				End With
+				cmdDel.Execute , , adCmdText + adExecuteNoRecords
+				Set cmdDel = Nothing
+				Response.Redirect "consult_list.asp?ji_num=10&page=" & pageNum
+			End If
+
+			' ---- 전체/미처리/완료 건수 ----
+			Dim totalCount, doneCount, pendingCount
+			Set rsCount = Server.CreateObject("ADODB.Recordset")
+			rsCount.Open "SELECT COUNT(*) AS cnt, SUM(CASE WHEN Status=N'완료' THEN 1 ELSE 0 END) AS doneCnt FROM dbo.QuickConsult", db, 0, 1
+			totalCount = rsCount("cnt")
+			If IsNull(rsCount("doneCnt")) Then
+				doneCount = 0
+			Else
+				doneCount = rsCount("doneCnt")
+			End If
+			pendingCount = totalCount - doneCount
+			rsCount.close
+			Set rsCount = Nothing
+
+			Dim totalPages
+			If totalCount = 0 Then
+				totalPages = 1
+			Else
+				totalPages = Int((totalCount - 1) / PAGE_SIZE) + 1
+			End If
+			If pageNum > totalPages Then pageNum = totalPages
+
+			Dim startRow, endRow
+			startRow = (pageNum - 1) * PAGE_SIZE + 1
+			endRow = pageNum * PAGE_SIZE
 		%>
 
-		<p style="margin-bottom:12px;">
-			<a href="consult_export.asp">CSV 다운로드</a>
+		<p style="margin-bottom:10px; color:#555;">
+			전체 <b><%=totalCount%></b>건 · 미처리 <b style="color:#c0392b;"><%=pendingCount%></b>건 · 완료 <b><%=doneCount%></b>건
 		</p>
+
+		<form method="get" action="consult_export.asp" style="margin-bottom:16px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:13px;">
+			<label>기간: <input type="date" name="from" id="expFrom"></label>
+			<label>~ <input type="date" name="to" id="expTo"></label>
+			<button type="submit">CSV 다운로드</button>
+			<span style="color:#888;">(기간을 비워두면 전체 다운로드)</span>
+			<span style="margin-left:8px;">
+				<a href="javascript:void(0)" onclick="setRange(0)">오늘</a> ·
+				<a href="javascript:void(0)" onclick="setRange(6)">최근 7일</a> ·
+				<a href="javascript:void(0)" onclick="setRange(29)">최근 30일</a>
+			</span>
+		</form>
+		<script>
+		function pad2(n) { return (n < 10 ? '0' : '') + n; }
+		function toDateStr(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+		function setRange(daysBack) {
+			var to = new Date();
+			var from = new Date();
+			from.setDate(to.getDate() - daysBack);
+			document.getElementById('expFrom').value = toDateStr(from);
+			document.getElementById('expTo').value = toDateStr(to);
+		}
+		</script>
 
 		<table border="1" cellpadding="6" cellspacing="0" style="width:100%; border-collapse:collapse; font-size:13px;">
 			<tr style="background:#f2f2f2;">
@@ -71,7 +145,9 @@
 			</tr>
 			<%
 				Set rsList = Server.CreateObject("ADODB.Recordset")
-				rsList.Open "SELECT Id, RequestedAt, Name, Phone, UnitType, SourcePage, Status FROM dbo.QuickConsult ORDER BY RequestedAt DESC", db, 0, 1
+				rsList.Open "SELECT Id, RequestedAt, Name, Phone, UnitType, SourcePage, Status FROM (" & _
+					"SELECT ROW_NUMBER() OVER (ORDER BY RequestedAt DESC) AS RowNum, Id, RequestedAt, Name, Phone, UnitType, SourcePage, Status " & _
+					"FROM dbo.QuickConsult) AS T WHERE RowNum BETWEEN " & startRow & " AND " & endRow & " ORDER BY RowNum", db, 0, 1
 
 				If rsList.bof Or rsList.eof Then
 					Response.write "<tr><td colspan=""7"" style=""text-align:center;padding:20px;"">신청 내역이 없습니다.</td></tr>"
@@ -87,9 +163,9 @@
 				<td><%=rsList("Status")%></td>
 				<td>
 					<% If rsList("Status") <> "완료" Then %>
-					<a href="consult_list.asp?ji_num=10&done=<%=rsList("Id")%>" onclick="return confirm('처리완료로 표시하시겠습니까?');">완료처리</a>
+					<a href="consult_list.asp?ji_num=10&page=<%=pageNum%>&done=<%=rsList("Id")%>" onclick="return confirm('처리완료로 표시하시겠습니까?');">완료처리</a>
 					<% Else %>
-					-
+					<a href="consult_list.asp?ji_num=10&page=<%=pageNum%>&del=<%=rsList("Id")%>" onclick="return confirm('완료된 신청 건을 삭제하시겠습니까? 삭제 후 복구할 수 없습니다.');" style="color:#c0392b;">삭제</a>
 					<% End If %>
 				</td>
 			</tr>
@@ -101,6 +177,16 @@
 				Set rsList = Nothing
 			%>
 		</table>
+
+		<p style="margin-top:14px; font-size:13px;">
+			<% If pageNum > 1 Then %>
+				<a href="consult_list.asp?ji_num=10&page=<%=pageNum-1%>">« 이전</a>
+			<% End If %>
+			&nbsp;<%=pageNum%> / <%=totalPages%> 페이지&nbsp;
+			<% If pageNum < totalPages Then %>
+				<a href="consult_list.asp?ji_num=10&page=<%=pageNum+1%>">다음 »</a>
+			<% End If %>
+		</p>
 	</section>
 </main>
 
