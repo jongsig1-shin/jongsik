@@ -178,7 +178,14 @@
   var hideToday = document.getElementById('qpHideToday');
 
   function notifyClose(hide) {
-    parent.postMessage(hide ? 'qc-popup-hide-today' : 'qc-popup-close', '*');
+    if (window.self !== window.top) {
+      // main.asp의 로더 스크립트가 iframe으로 띄운 경우: 부모 창에 닫기 신호 전달
+      parent.postMessage(hide ? 'qc-popup-hide-today' : 'qc-popup-close', '*');
+    } else {
+      // 네이버 블로그 등 외부에서 이 페이지를 직접 링크로 열어 단독 화면으로 뜬 경우:
+      // 닫을 부모 창이 없으므로 모바일 홈페이지로 이동
+      window.location.href = 'https://sinsung.pe.kr/mobile/inc/main.asp';
+    }
   }
 
   document.getElementById('qpClose').addEventListener('click', function () {
