@@ -189,6 +189,23 @@
 			.qc-pagination { margin-top: 18px; text-align: center; font-size: 13px; color: #5b6472; }
 			.qc-pagination a { color: #17233d; text-decoration: none; font-weight: 700; padding: 4px 10px; }
 			.qc-pagination a:hover { text-decoration: underline; }
+
+			/* ---- 모바일 화면 대응 ---- */
+			@media (max-width: 640px) {
+				.qc-stats { gap: 8px; }
+				.qc-stat { flex: 1 1 auto; padding: 8px 10px; text-align: center; }
+				.qc-toolbar { padding: 12px; }
+				.qc-toolbar label { flex: 1 1 auto; }
+				.qc-toolbar input[type=date] { width: 100%; }
+				.qc-toolbar .qc-quick { width: 100%; }
+				.qc-card { padding: 12px 14px; }
+				.qc-card-top { flex-direction: column; align-items: flex-start; gap: 4px; }
+				.qc-card-top > div:last-child { display: flex; align-items: center; gap: 8px; }
+				.qc-card-row { flex-direction: column; align-items: stretch; }
+				.qc-card-actions { width: 100%; }
+				.qc-card-actions .qc-btn { flex: 1 1 auto; text-align: center; padding: 9px 14px; }
+				.qc-source { max-width: 55vw; }
+			}
 		</style>
 
 		<div class="qc-wrap">
@@ -265,7 +282,7 @@
 						</div>
 						<div class="qc-card-actions">
 							<% If Not rowIsDone Then %>
-							<a class="qc-btn qc-btn-primary" href="consult_list.asp?ji_num=10&page=<%=pageNum%>&done=<%=rowId%>" onclick="return confirm('처리완료로 표시하시겠습니까?');">완료처리</a>
+							<a class="qc-btn qc-btn-primary" href="consult_list.asp?ji_num=10&page=<%=pageNum%>&done=<%=rowId%>" onclick="return confirm('상담처리로 표시하시겠습니까?');">상담처리</a>
 							<% Else %>
 							<a class="qc-btn qc-btn-danger" href="consult_list.asp?ji_num=10&page=<%=pageNum%>&del=<%=rowId%>" onclick="return confirm('완료된 신청 건을 삭제하시겠습니까? 삭제 후 복구할 수 없습니다.');">삭제</a>
 							<% End If %>
