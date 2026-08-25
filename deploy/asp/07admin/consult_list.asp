@@ -46,7 +46,7 @@
 			End If
 
 			' ---- 페이지 번호 (15건씩) ----
-			Const PAGE_SIZE = 15
+			Const PAGE_SIZE = 5
 			Dim pageNum
 			pageNum = Request.QueryString("page")
 			If Not IsNumeric(pageNum) Or CLng(pageNum) < 1 Then
@@ -158,10 +158,10 @@
 			.qc-toolbar .qc-quick a:hover { text-decoration: underline; }
 			.qc-hint { color: #9aa1ad; }
 
-			.qc-btn { display: inline-block; border-radius: 7px; padding: 6px 14px; font-size: 12.5px; font-weight: 700; text-decoration: none; border: 1px solid transparent; cursor: pointer; }
-			.qc-btn-primary { background: #17233d; color: #fdfbf6; }
-			.qc-btn-danger { background: #fff; color: #c0392b; border-color: #f0c1ba; }
-			.qc-btn-save { background: #b9862f; color: #231604; }
+			.qc-btn, a.qc-btn:link, a.qc-btn:visited { display: inline-block; border-radius: 7px; padding: 6px 14px; font-size: 12.5px; font-weight: 700; text-decoration: none; border: 1px solid transparent; cursor: pointer; }
+			.qc-btn-primary, a.qc-btn-primary:link, a.qc-btn-primary:visited, a.qc-btn-primary:hover { background: #17233d !important; color: #fdfbf6 !important; }
+			.qc-btn-danger, a.qc-btn-danger:link, a.qc-btn-danger:visited, a.qc-btn-danger:hover { background: #fff !important; color: #c0392b !important; border-color: #f0c1ba; }
+			.qc-btn-save { background: #b9862f !important; color: #231604 !important; }
 
 			.qc-list { display: flex; flex-direction: column; gap: 10px; }
 			.qc-card { background: #fff; border: 1px solid #e4e7ec; border-radius: 12px; padding: 16px 18px; }
