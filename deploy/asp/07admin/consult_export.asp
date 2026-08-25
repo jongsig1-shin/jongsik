@@ -58,7 +58,7 @@
 	If qFrom <> "" Then whereSql = whereSql & " AND RequestedAt >= '" & qFrom & "'"
 	If qTo   <> "" Then whereSql = whereSql & " AND RequestedAt < DATEADD(day, 1, '" & qTo & "')"
 
-	sql = "SELECT RequestedAt, Name, Phone, UnitType, Message, SourcePage, Status FROM dbo.QuickConsult"
+	sql = "SELECT RequestedAt, Name, Phone, UnitType, Message, SourcePage, Status, HandledMemo FROM dbo.QuickConsult"
 	If whereSql <> "" Then sql = sql & " WHERE " & Mid(whereSql, 6) ' 맨 앞의 " AND " 제거
 	sql = sql & " ORDER BY RequestedAt DESC"
 
@@ -79,7 +79,7 @@
 	End Function
 
 	Dim csvText
-	csvText = "신청일시,이름,연락처,관심평형,문의내용,유입페이지,상태" & vbCrLf
+	csvText = "신청일시,이름,연락처,관심평형,문의내용,유입페이지,상태,상담메모" & vbCrLf
 
 	Set rsExp = Server.CreateObject("ADODB.Recordset")
 	rsExp.Open sql, db, 0, 1
@@ -88,7 +88,7 @@
 		csvText = csvText & CsvEsc(rsExp("RequestedAt")) & "," & CsvEsc(rsExp("Name")) & "," &_
 			CsvEsc(rsExp("Phone")) & "," & CsvEsc(rsExp("UnitType")) & "," &_
 			CsvEsc(rsExp("Message")) & "," & CsvEsc(rsExp("SourcePage")) & "," &_
-			CsvEsc(rsExp("Status")) & vbCrLf
+			CsvEsc(rsExp("Status")) & "," & CsvEsc(rsExp("HandledMemo")) & vbCrLf
 		rsExp.movenext
 	Loop
 	rsExp.close

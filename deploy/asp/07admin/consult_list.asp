@@ -85,6 +85,25 @@
 				Response.Redirect "consult_list.asp?ji_num=10&page=" & pageNum
 			End If
 
+			' ---- 상담메모 저장 (완료된 건에 한해, 답글 형태로 상담 내용 기록) ----
+			Dim postMemoId
+			postMemoId = Request.Form("memoId")
+			If postMemoId <> "" And IsNumeric(postMemoId) Then
+				Dim postMemoText
+				postMemoText = Trim(Request.Form("memoText"))
+				If Len(postMemoText) > 300 Then postMemoText = Left(postMemoText, 300)
+				Set cmdMemo = Server.CreateObject("ADODB.Command")
+				With cmdMemo
+					.ActiveConnection = db
+					.CommandText = "UPDATE dbo.QuickConsult SET HandledMemo=? WHERE Id=? AND Status=N'완료'"
+					.Parameters.Append .CreateParameter("p_memo", 200, 1, 300, postMemoText)
+					.Parameters.Append .CreateParameter("p_id", 3, 1, , CLng(postMemoId))
+				End With
+				cmdMemo.Execute , , adCmdText + adExecuteNoRecords
+				Set cmdMemo = Nothing
+				Response.Redirect "consult_list.asp?ji_num=10&page=" & pageNum
+			End If
+
 			' ---- 전체/미처리/완료 건수 ----
 			Dim totalCount, doneCount, pendingCount
 			Set rsCount = Server.CreateObject("ADODB.Recordset")
@@ -137,22 +156,41 @@
 			document.getElementById('expFrom').value = toDateStr(from);
 			document.getElementById('expTo').value = toDateStr(to);
 		}
+		function toggleMemo(id) {
+			var row = document.getElementById('memoRow_' + id);
+			if (!row) return;
+			row.style.display = (row.style.display === 'none' || row.style.display === '') ? 'table-row' : 'none';
+		}
 		</script>
 
 		<table border="1" cellpadding="6" cellspacing="0" style="width:100%; border-collapse:collapse; font-size:13px;">
 			<tr style="background:#f2f2f2;">
-				<th>신청일시</th><th>이름</th><th>연락처</th><th>관심평형</th><th>유입페이지</th><th>상태</th><th>처리</th>
+				<th>신청일시</th><th>이름</th><th>연락처</th><th>관심평형</th><th>유입페이지</th><th>상태</th><th>상담메모</th><th>처리</th>
 			</tr>
 			<%
 				Set rsList = Server.CreateObject("ADODB.Recordset")
-				rsList.Open "SELECT Id, RequestedAt, Name, Phone, UnitType, SourcePage, Status FROM (" & _
-					"SELECT ROW_NUMBER() OVER (ORDER BY RequestedAt DESC) AS RowNum, Id, RequestedAt, Name, Phone, UnitType, SourcePage, Status " & _
+				rsList.Open "SELECT Id, RequestedAt, Name, Phone, UnitType, SourcePage, Status, HandledMemo FROM (" & _
+					"SELECT ROW_NUMBER() OVER (ORDER BY RequestedAt DESC) AS RowNum, Id, RequestedAt, Name, Phone, UnitType, SourcePage, Status, HandledMemo " & _
 					"FROM dbo.QuickConsult) AS T WHERE RowNum BETWEEN " & startRow & " AND " & endRow & " ORDER BY RowNum", db, 0, 1
 
 				If rsList.bof Or rsList.eof Then
-					Response.write "<tr><td colspan=""7"" style=""text-align:center;padding:20px;"">신청 내역이 없습니다.</td></tr>"
+					Response.write "<tr><td colspan=""8"" style=""text-align:center;padding:20px;"">신청 내역이 없습니다.</td></tr>"
 				Else
 					Do While Not rsList.eof
+						Dim rowId, rowMemo, rowMemoPreview
+						rowId = rsList("Id")
+						If IsNull(rsList("HandledMemo")) Then
+							rowMemo = ""
+						Else
+							rowMemo = rsList("HandledMemo")
+						End If
+						If rowMemo = "" Then
+							rowMemoPreview = "-"
+						ElseIf Len(rowMemo) > 20 Then
+							rowMemoPreview = Server.HTMLEncode(Left(rowMemo, 20)) & "..."
+						Else
+							rowMemoPreview = Server.HTMLEncode(rowMemo)
+						End If
 			%>
 			<tr>
 				<td><%=rsList("RequestedAt")%></td>
@@ -161,14 +199,28 @@
 				<td><%=Server.HTMLEncode(rsList("UnitType"))%></td>
 				<td><%=Server.HTMLEncode(rsList("SourcePage"))%></td>
 				<td><%=rsList("Status")%></td>
+				<td><%=rowMemoPreview%></td>
 				<td>
 					<% If rsList("Status") <> "완료" Then %>
-					<a href="consult_list.asp?ji_num=10&page=<%=pageNum%>&done=<%=rsList("Id")%>" onclick="return confirm('처리완료로 표시하시겠습니까?');">완료처리</a>
+					<a href="consult_list.asp?ji_num=10&page=<%=pageNum%>&done=<%=rowId%>" onclick="return confirm('처리완료로 표시하시겠습니까?');">완료처리</a>
 					<% Else %>
-					<a href="consult_list.asp?ji_num=10&page=<%=pageNum%>&del=<%=rsList("Id")%>" onclick="return confirm('완료된 신청 건을 삭제하시겠습니까? 삭제 후 복구할 수 없습니다.');" style="color:#c0392b;">삭제</a>
+					<a href="javascript:void(0)" onclick="toggleMemo(<%=rowId%>)">메모입력</a>
+					&nbsp;|&nbsp;
+					<a href="consult_list.asp?ji_num=10&page=<%=pageNum%>&del=<%=rowId%>" onclick="return confirm('완료된 신청 건을 삭제하시겠습니까? 삭제 후 복구할 수 없습니다.');" style="color:#c0392b;">삭제</a>
 					<% End If %>
 				</td>
 			</tr>
+			<% If rsList("Status") = "완료" Then %>
+			<tr id="memoRow_<%=rowId%>" style="display:none;">
+				<td colspan="8" style="background:#fafafa;">
+					<form method="post" action="consult_list.asp?ji_num=10&page=<%=pageNum%>">
+						<input type="hidden" name="memoId" value="<%=rowId%>">
+						<textarea name="memoText" rows="3" maxlength="300" style="width:100%; box-sizing:border-box; font-family:inherit; font-size:13px;" placeholder="상담 진행 내용을 답글 형태로 남겨두세요 (최대 300자)"><%=Server.HTMLEncode(rowMemo)%></textarea>
+						<button type="submit" style="margin-top:6px;">저장</button>
+					</form>
+				</td>
+			</tr>
+			<% End If %>
 			<%
 						rsList.movenext
 					Loop
