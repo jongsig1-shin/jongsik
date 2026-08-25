@@ -129,116 +129,177 @@
 			Dim startRow, endRow
 			startRow = (pageNum - 1) * PAGE_SIZE + 1
 			endRow = pageNum * PAGE_SIZE
+
+			' 유입경로 표시용 — qr: 접두어는 배지 형태로 짧게, 그 외(리퍼러 URL 등)는 길이를 잘라서
+			' 표 폭을 넓게 차지하지 않도록 함. 전체 값은 title 속성(마우스 오버)으로 확인 가능
+			Function ShortSource(raw)
+				Dim s
+				s = raw & ""
+				If Left(s, 3) = "qr:" Then
+					ShortSource = "QR·" & Mid(s, 4)
+				ElseIf Len(s) > 26 Then
+					ShortSource = Left(s, 26) & "..."
+				Else
+					ShortSource = s
+				End If
+			End Function
 		%>
 
-		<p style="margin-bottom:10px; color:#555;">
-			전체 <b><%=totalCount%></b>건 · 미처리 <b style="color:#c0392b;"><%=pendingCount%></b>건 · 완료 <b><%=doneCount%></b>건
-		</p>
+		<style>
+			.qc-wrap { font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; color: #1f2430; }
+			.qc-stats { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+			.qc-stat { background: #f6f7f9; border: 1px solid #e4e7ec; border-radius: 10px; padding: 10px 18px; font-size: 12.5px; color: #5b6472; }
+			.qc-stat b { font-size: 17px; color: #17233d; display: block; margin-top: 2px; }
+			.qc-stat.qc-stat-pending b { color: #c0392b; }
 
-		<form method="get" action="consult_export.asp" style="margin-bottom:16px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:13px;">
-			<label>기간: <input type="date" name="from" id="expFrom"></label>
-			<label>~ <input type="date" name="to" id="expTo"></label>
-			<button type="submit">CSV 다운로드</button>
-			<span style="color:#888;">(기간을 비워두면 전체 다운로드)</span>
-			<span style="margin-left:8px;">
-				<a href="javascript:void(0)" onclick="setRange(0)">오늘</a> ·
-				<a href="javascript:void(0)" onclick="setRange(6)">최근 7일</a> ·
-				<a href="javascript:void(0)" onclick="setRange(29)">최근 30일</a>
-			</span>
-		</form>
-		<script>
-		function pad2(n) { return (n < 10 ? '0' : '') + n; }
-		function toDateStr(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
-		function setRange(daysBack) {
-			var to = new Date();
-			var from = new Date();
-			from.setDate(to.getDate() - daysBack);
-			document.getElementById('expFrom').value = toDateStr(from);
-			document.getElementById('expTo').value = toDateStr(to);
-		}
-		function toggleMemo(id) {
-			var row = document.getElementById('memoRow_' + id);
-			if (!row) return;
-			row.style.display = (row.style.display === 'none' || row.style.display === '') ? 'table-row' : 'none';
-		}
-		</script>
+			.qc-toolbar { background: #fff; border: 1px solid #e4e7ec; border-radius: 12px; padding: 14px 18px; margin-bottom: 18px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 13px; }
+			.qc-toolbar input[type=date] { border: 1px solid #d7dbe3; border-radius: 6px; padding: 5px 8px; font-size: 13px; }
+			.qc-toolbar .qc-quick a { color: #8a5a17; text-decoration: none; }
+			.qc-toolbar .qc-quick a:hover { text-decoration: underline; }
+			.qc-hint { color: #9aa1ad; }
 
-		<table border="1" cellpadding="6" cellspacing="0" style="width:100%; border-collapse:collapse; font-size:13px;">
-			<tr style="background:#f2f2f2;">
-				<th>신청일시</th><th>이름</th><th>연락처</th><th>관심평형</th><th>유입페이지</th><th>상태</th><th>상담메모</th><th>처리</th>
-			</tr>
-			<%
-				Set rsList = Server.CreateObject("ADODB.Recordset")
-				rsList.Open "SELECT Id, RequestedAt, Name, Phone, UnitType, SourcePage, Status, HandledMemo FROM (" & _
-					"SELECT ROW_NUMBER() OVER (ORDER BY RequestedAt DESC) AS RowNum, Id, RequestedAt, Name, Phone, UnitType, SourcePage, Status, HandledMemo " & _
-					"FROM dbo.QuickConsult) AS T WHERE RowNum BETWEEN " & startRow & " AND " & endRow & " ORDER BY RowNum", db, 0, 1
+			.qc-btn { display: inline-block; border-radius: 7px; padding: 6px 14px; font-size: 12.5px; font-weight: 700; text-decoration: none; border: 1px solid transparent; cursor: pointer; }
+			.qc-btn-primary { background: #17233d; color: #fdfbf6; }
+			.qc-btn-danger { background: #fff; color: #c0392b; border-color: #f0c1ba; }
+			.qc-btn-save { background: #b9862f; color: #231604; }
 
-				If rsList.bof Or rsList.eof Then
-					Response.write "<tr><td colspan=""8"" style=""text-align:center;padding:20px;"">신청 내역이 없습니다.</td></tr>"
-				Else
-					Do While Not rsList.eof
-						Dim rowId, rowMemo, rowMemoPreview
-						rowId = rsList("Id")
-						If IsNull(rsList("HandledMemo")) Then
-							rowMemo = ""
-						Else
-							rowMemo = rsList("HandledMemo")
-						End If
-						If rowMemo = "" Then
-							rowMemoPreview = "-"
-						ElseIf Len(rowMemo) > 20 Then
-							rowMemoPreview = Server.HTMLEncode(Left(rowMemo, 20)) & "..."
-						Else
-							rowMemoPreview = Server.HTMLEncode(rowMemo)
-						End If
-			%>
-			<tr>
-				<td><%=rsList("RequestedAt")%></td>
-				<td><%=Server.HTMLEncode(rsList("Name"))%></td>
-				<td><%=Server.HTMLEncode(rsList("Phone"))%></td>
-				<td><%=Server.HTMLEncode(rsList("UnitType"))%></td>
-				<td><%=Server.HTMLEncode(rsList("SourcePage"))%></td>
-				<td><%=rsList("Status")%></td>
-				<td><%=rowMemoPreview%></td>
-				<td>
-					<% If rsList("Status") <> "완료" Then %>
-					<a href="consult_list.asp?ji_num=10&page=<%=pageNum%>&done=<%=rowId%>" onclick="return confirm('처리완료로 표시하시겠습니까?');">완료처리</a>
-					<% Else %>
-					<a href="javascript:void(0)" onclick="toggleMemo(<%=rowId%>)">메모입력</a>
-					&nbsp;|&nbsp;
-					<a href="consult_list.asp?ji_num=10&page=<%=pageNum%>&del=<%=rowId%>" onclick="return confirm('완료된 신청 건을 삭제하시겠습니까? 삭제 후 복구할 수 없습니다.');" style="color:#c0392b;">삭제</a>
+			.qc-list { display: flex; flex-direction: column; gap: 10px; }
+			.qc-card { background: #fff; border: 1px solid #e4e7ec; border-radius: 12px; padding: 16px 18px; }
+			.qc-card-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+			.qc-name { font-size: 15px; font-weight: 900; color: #17233d; margin-right: 10px; }
+			.qc-phone { font-size: 14px; color: #3a4152; font-variant-numeric: tabular-nums; }
+			.qc-date { font-size: 12px; color: #8a92a3; margin-right: 10px; }
+			.qc-status { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 800; }
+			.qc-status-pending { background: #fdecea; color: #c0392b; }
+			.qc-status-done { background: #e8f5e9; color: #2e7d32; }
+
+			.qc-card-sub { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+			.qc-chip { background: #f1f0e9; color: #7a5c1e; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+			.qc-source { font-size: 11px; color: #8a92a3; background: #f6f7f9; padding: 3px 9px; border-radius: 6px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: help; }
+
+			.qc-card-actions { margin-top: 12px; display: flex; gap: 8px; }
+
+			.qc-memo { margin-top: 14px; padding-top: 12px; border-top: 1px dashed #e4e7ec; }
+			.qc-memo-label { font-size: 11.5px; font-weight: 800; color: #8a92a3; margin-bottom: 6px; }
+			.qc-memo textarea { width: 100%; box-sizing: border-box; border: 1px solid #d7dbe3; border-radius: 8px; padding: 8px 10px; font-family: inherit; font-size: 13px; resize: vertical; }
+			.qc-memo-actions { margin-top: 6px; text-align: right; }
+
+			.qc-empty { text-align: center; padding: 40px 0; color: #8a92a3; font-size: 13px; }
+			.qc-pagination { margin-top: 18px; text-align: center; font-size: 13px; color: #5b6472; }
+			.qc-pagination a { color: #17233d; text-decoration: none; font-weight: 700; padding: 4px 10px; }
+			.qc-pagination a:hover { text-decoration: underline; }
+		</style>
+
+		<div class="qc-wrap">
+			<div class="qc-stats">
+				<div class="qc-stat">전체<b><%=totalCount%>건</b></div>
+				<div class="qc-stat qc-stat-pending">미처리<b><%=pendingCount%>건</b></div>
+				<div class="qc-stat">완료<b><%=doneCount%>건</b></div>
+			</div>
+
+			<form method="get" action="consult_export.asp" class="qc-toolbar">
+				<label>기간: <input type="date" name="from" id="expFrom"></label>
+				<label>~ <input type="date" name="to" id="expTo"></label>
+				<button type="submit" class="qc-btn qc-btn-primary">CSV 다운로드</button>
+				<span class="qc-hint">(기간을 비워두면 전체 다운로드)</span>
+				<span class="qc-quick">
+					<a href="javascript:void(0)" onclick="setRange(0)">오늘</a> ·
+					<a href="javascript:void(0)" onclick="setRange(6)">최근 7일</a> ·
+					<a href="javascript:void(0)" onclick="setRange(29)">최근 30일</a>
+				</span>
+			</form>
+			<script>
+			function pad2(n) { return (n < 10 ? '0' : '') + n; }
+			function toDateStr(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+			function setRange(daysBack) {
+				var to = new Date();
+				var from = new Date();
+				from.setDate(to.getDate() - daysBack);
+				document.getElementById('expFrom').value = toDateStr(from);
+				document.getElementById('expTo').value = toDateStr(to);
+			}
+			</script>
+
+			<div class="qc-list">
+				<%
+					Set rsList = Server.CreateObject("ADODB.Recordset")
+					rsList.Open "SELECT Id, RequestedAt, Name, Phone, UnitType, SourcePage, Status, HandledMemo FROM (" & _
+						"SELECT ROW_NUMBER() OVER (ORDER BY RequestedAt DESC) AS RowNum, Id, RequestedAt, Name, Phone, UnitType, SourcePage, Status, HandledMemo " & _
+						"FROM dbo.QuickConsult) AS T WHERE RowNum BETWEEN " & startRow & " AND " & endRow & " ORDER BY RowNum", db, 0, 1
+
+					If rsList.bof Or rsList.eof Then
+				%>
+				<div class="qc-empty">신청 내역이 없습니다.</div>
+				<%
+					Else
+						Do While Not rsList.eof
+							Dim rowId, rowMemo, rowIsDone
+							rowId = rsList("Id")
+							rowIsDone = (rsList("Status") = "완료")
+							If IsNull(rsList("HandledMemo")) Then
+								rowMemo = ""
+							Else
+								rowMemo = rsList("HandledMemo")
+							End If
+				%>
+				<div class="qc-card">
+					<div class="qc-card-top">
+						<div>
+							<span class="qc-name"><%=Server.HTMLEncode(rsList("Name"))%></span>
+							<span class="qc-phone"><%=Server.HTMLEncode(rsList("Phone"))%></span>
+						</div>
+						<div>
+							<span class="qc-date"><%=rsList("RequestedAt")%></span>
+							<% If rowIsDone Then %>
+							<span class="qc-status qc-status-done">완료</span>
+							<% Else %>
+							<span class="qc-status qc-status-pending">미처리</span>
+							<% End If %>
+						</div>
+					</div>
+					<div class="qc-card-sub">
+						<span class="qc-chip"><%=Server.HTMLEncode(rsList("UnitType"))%></span>
+						<span class="qc-source" title="<%=Server.HTMLEncode(rsList("SourcePage"))%>"><%=Server.HTMLEncode(ShortSource(rsList("SourcePage")))%></span>
+					</div>
+					<div class="qc-card-actions">
+						<% If Not rowIsDone Then %>
+						<a class="qc-btn qc-btn-primary" href="consult_list.asp?ji_num=10&page=<%=pageNum%>&done=<%=rowId%>" onclick="return confirm('처리완료로 표시하시겠습니까?');">완료처리</a>
+						<% Else %>
+						<a class="qc-btn qc-btn-danger" href="consult_list.asp?ji_num=10&page=<%=pageNum%>&del=<%=rowId%>" onclick="return confirm('완료된 신청 건을 삭제하시겠습니까? 삭제 후 복구할 수 없습니다.');">삭제</a>
+						<% End If %>
+					</div>
+					<% If rowIsDone Then %>
+					<div class="qc-memo">
+						<div class="qc-memo-label">상담메모</div>
+						<form method="post" action="consult_list.asp?ji_num=10&page=<%=pageNum%>">
+							<input type="hidden" name="memoId" value="<%=rowId%>">
+							<textarea name="memoText" rows="2" maxlength="300" placeholder="상담 진행 내용을 남겨두세요 (최대 300자)"><%=Server.HTMLEncode(rowMemo)%></textarea>
+							<div class="qc-memo-actions">
+								<button type="submit" class="qc-btn qc-btn-save">저장</button>
+							</div>
+						</form>
+					</div>
 					<% End If %>
-				</td>
-			</tr>
-			<% If rsList("Status") = "완료" Then %>
-			<tr id="memoRow_<%=rowId%>" style="display:none;">
-				<td colspan="8" style="background:#fafafa;">
-					<form method="post" action="consult_list.asp?ji_num=10&page=<%=pageNum%>">
-						<input type="hidden" name="memoId" value="<%=rowId%>">
-						<textarea name="memoText" rows="3" maxlength="300" style="width:100%; box-sizing:border-box; font-family:inherit; font-size:13px;" placeholder="상담 진행 내용을 답글 형태로 남겨두세요 (최대 300자)"><%=Server.HTMLEncode(rowMemo)%></textarea>
-						<button type="submit" style="margin-top:6px;">저장</button>
-					</form>
-				</td>
-			</tr>
-			<% End If %>
-			<%
-						rsList.movenext
-					Loop
-				End If
-				rsList.close
-				Set rsList = Nothing
-			%>
-		</table>
+				</div>
+				<%
+							rsList.movenext
+						Loop
+					End If
+					rsList.close
+					Set rsList = Nothing
+				%>
+			</div>
 
-		<p style="margin-top:14px; font-size:13px;">
-			<% If pageNum > 1 Then %>
-				<a href="consult_list.asp?ji_num=10&page=<%=pageNum-1%>">« 이전</a>
-			<% End If %>
-			&nbsp;<%=pageNum%> / <%=totalPages%> 페이지&nbsp;
-			<% If pageNum < totalPages Then %>
-				<a href="consult_list.asp?ji_num=10&page=<%=pageNum+1%>">다음 »</a>
-			<% End If %>
-		</p>
+			<div class="qc-pagination">
+				<% If pageNum > 1 Then %>
+					<a href="consult_list.asp?ji_num=10&page=<%=pageNum-1%>">« 이전</a>
+				<% End If %>
+				&nbsp;<%=pageNum%> / <%=totalPages%> 페이지&nbsp;
+				<% If pageNum < totalPages Then %>
+					<a href="consult_list.asp?ji_num=10&page=<%=pageNum+1%>">다음 »</a>
+				<% End If %>
+			</div>
+		</div>
 	</section>
 </main>
 
