@@ -1,0 +1,164 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700;900&family=Cormorant+Garamond:wght@500;600&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    width: 1050px; height: 1500px;
+    font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+    overflow: hidden;
+  }
+  .page {
+    width: 1050px; height: 1500px;
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(120% 55% at 15% 0%, rgba(217,168,74,0.20), transparent 55%),
+      linear-gradient(200deg, #24344f 0%, #16233c 32%, #101a2d 60%, #0a1220 100%);
+    color: #fdfbf6;
+  }
+  .ring {
+    position: absolute; top: -70px; right: -110px;
+    width: 300px; height: 300px;
+    border: 1.5px solid rgba(217,168,74,0.45);
+    border-radius: 50%;
+  }
+
+  /* ---- abstract dusk skyline (no real photo) ---- */
+  .skyline { position: absolute; left: 0; right: 0; bottom: 0; height: 980px; }
+  .sky-glow {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 100%;
+    background: linear-gradient(180deg, transparent 0%, rgba(217,168,74,0.14) 60%, rgba(217,168,74,0.07) 100%);
+  }
+  .bld { position: absolute; bottom: 0; background: #0c1526; border-top: 1px solid rgba(217,168,74,0.18); }
+  .bld-win { position: absolute; left: 10%; right: 10%; top: 22px; bottom: 40px; background-image: repeating-linear-gradient(0deg, rgba(230,195,116,0.35) 0 3px, transparent 3px 16px), repeating-linear-gradient(90deg, rgba(230,195,116,0.35) 0 3px, transparent 3px 16px); background-blend-mode: screen; opacity: 0.5; }
+  .bld-main {
+    left: 560px; width: 180px; height: 780px;
+    background: linear-gradient(180deg, #1c2c4a 0%, #0c1526 100%);
+  }
+  .bld-main .cap { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); font-family: "Cormorant Garamond", serif; font-size: 16px; letter-spacing: 0.35em; color: #e6c374; writing-mode: vertical-rl; }
+
+  /* ---- header text ---- */
+  .head { position: relative; z-index: 3; padding: 92px 70px 0; }
+  .rule { width: 60px; height: 4px; background: #d9a84a; margin-bottom: 22px; }
+  .tag {
+    display: inline-block; font-size: 16px; font-weight: 700; letter-spacing: 0.04em;
+    color: #f4e6c8; background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(244,230,200,0.35); padding: 7px 18px; border-radius: 999px;
+    margin-bottom: 26px;
+  }
+  .title-1 { font-family: "Noto Serif KR", serif; font-weight: 900; font-size: 46px; margin: 0; letter-spacing: -0.01em; color: #fdfbf6; }
+  .title-2 { font-family: "Noto Serif KR", serif; font-weight: 900; font-size: 46px; margin: 2px 0 18px; letter-spacing: -0.01em; color: #e6c374; }
+  .sub { font-size: 20px; color: #cdd4e4; margin: 0 0 22px; font-weight: 500; }
+  .sub b { color: #f4e6c8; font-weight: 700; }
+  .chips { display: flex; gap: 10px; flex-wrap: wrap; }
+  .chip {
+    font-size: 15px; font-weight: 700; color: #f4e6c8;
+    border: 1px solid rgba(217,168,74,0.55); padding: 7px 16px; border-radius: 999px;
+  }
+
+  /* ---- top-right wordmark ---- */
+  .wordmark { position: absolute; top: 96px; right: 70px; text-align: right; z-index: 3; }
+  .wordmark .ipark { font-family: "Cormorant Garamond", serif; font-weight: 600; font-size: 26px; letter-spacing: 0.14em; color: #e6c374; }
+  .wordmark .wm-rule { width: 34px; height: 1px; background: rgba(230,195,116,0.6); margin: 8px 0 8px auto; }
+  .wordmark .tagline { font-family: "Cormorant Garamond", serif; font-size: 14px; letter-spacing: 0.1em; color: #cdd4e4; line-height: 1.6; }
+
+  /* ---- QR card ---- */
+  .qr-card {
+    position: absolute; left: 70px; bottom: 340px; z-index: 3;
+    width: 380px;
+    background: #f6f0e2;
+    border: 1.5px solid #d9a84a;
+    border-radius: 26px;
+    padding: 38px 32px;
+    box-shadow: 0 30px 60px -24px rgba(0,0,0,0.55);
+  }
+  .qr-card img { width: 148px; height: 148px; border-radius: 10px; background: #fff; padding: 8px; display: block; margin-bottom: 18px; }
+  .qr-card h2 { margin: 0 0 4px; font-size: 22px; font-weight: 900; color: #17233d; line-height: 1.35; }
+  .qr-card h2 b { color: #a3701f; }
+  .qr-card .divider { width: 100%; height: 1px; background: #ddd2b8; margin: 16px 0; }
+  .qr-card p { margin: 0; font-size: 14px; color: #55534a; line-height: 1.6; }
+
+  /* ---- bottom brand bar ---- */
+  .bottom {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 3;
+    background: #0e1626; border-top: 1px solid rgba(217,168,74,0.35);
+    padding: 26px 70px; display: flex; align-items: center; gap: 16px;
+  }
+  .bottom .icon { width: 44px; height: 44px; flex-shrink: 0; }
+  .bottom .brand { flex: 1; }
+  .bottom .brand-name { font-family: "Noto Serif KR", serif; font-size: 21px; font-weight: 700; color: #fdfbf6; }
+  .bottom .brand-name b { color: #e6c374; }
+  .bottom .brand-tag { font-size: 12px; color: #9aa4b8; margin-top: 3px; }
+  .bottom .phone { display: flex; align-items: center; gap: 8px; font-size: 22px; font-weight: 900; color: #fdfbf6; font-variant-numeric: tabular-nums; }
+  .bottom .phone svg { width: 18px; height: 18px; color: #e6c374; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="ring"></div>
+
+    <div class="skyline">
+      <div class="sky-glow"></div>
+      <div class="bld" style="left:470px; width:80px; height:420px;"><div class="bld-win"></div></div>
+      <div class="bld bld-main"><span class="cap">I PARK</span><div class="bld-win"></div></div>
+      <div class="bld" style="left:755px; width:70px; height:520px;"><div class="bld-win"></div></div>
+      <div class="bld" style="left:835px; width:95px; height:640px;"><div class="bld-win"></div></div>
+      <div class="bld" style="left:940px; width:65px; height:460px;"><div class="bld-win"></div></div>
+      <div class="bld" style="left:1010px; width:40px; height:340px; opacity:0.85;"></div>
+    </div>
+
+    <div class="wordmark">
+      <div class="ipark">I&nbsp;&nbsp;PARK</div>
+      <div class="wm-rule"></div>
+      <div class="tagline">PREMIUM LIFE<br>IN SUNCHEON</div>
+    </div>
+
+    <div class="head">
+      <div class="rule"></div>
+      <span class="tag">I PARK · 현대산업개발 도급</span>
+      <div class="title-1">순천 조례동</div>
+      <div class="title-2">아이파크</div>
+      <p class="sub">전남 순천시 조례동 일원 · <b>683세대</b> · <b>2029년 하반기</b> 준공목표</p>
+      <div class="chips">
+        <span class="chip">전용 84·85㎡초과</span>
+        <span class="chip">KTX·SRT 순천역 인근</span>
+        <span class="chip">순천IC 인근</span>
+      </div>
+    </div>
+
+    <div class="qr-card">
+      <img src="data:image/png;base64,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" alt="빠른상담 신청 QR코드">
+      <h2>순천 조례동 <b>아이파크</b><br>빠른상담 등록 하세요</h2>
+      <div class="divider"></div>
+      <p>궁금한 점은<br>지금 바로 상담해보세요!</p>
+    </div>
+
+    <div class="bottom">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#e6c374" stroke-width="1.4">
+        <rect x="4" y="3" width="10" height="18" rx="1"/>
+        <rect x="14" y="8" width="6" height="13" rx="1"/>
+        <line x1="7" y1="6" x2="7" y2="6.5"/><line x1="10" y1="6" x2="10" y2="6.5"/>
+        <line x1="7" y1="9" x2="7" y2="9.5"/><line x1="10" y1="9" x2="10" y2="9.5"/>
+        <line x1="7" y1="12" x2="7" y2="12.5"/><line x1="10" y1="12" x2="10" y2="12.5"/>
+        <line x1="7" y1="15" x2="7" y2="15.5"/><line x1="10" y1="15" x2="10" y2="15.5"/>
+      </svg>
+      <div class="brand">
+        <div class="brand-name"><b>엘리트</b>공인중개사</div>
+        <div class="brand-tag">순천 조례동 일원 전문 상담 · 한국공인중개사협회 순천시지회 회원</div>
+      </div>
+      <div class="phone">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+        </svg>
+        010 7175 2700
+      </div>
+    </div>
+  </div>
+</body>
+</html>
