@@ -173,11 +173,12 @@
 			.qc-status-pending { background: #fdecea; color: #c0392b; }
 			.qc-status-done { background: #e8f5e9; color: #2e7d32; }
 
-			.qc-card-sub { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-			.qc-chip { background: #f1f0e9; color: #7a5c1e; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+			.qc-card-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+			.qc-card-tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+			.qc-chip { background: #f1f0e9; color: #7a5c1e; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
 			.qc-source { font-size: 11px; color: #8a92a3; background: #f6f7f9; padding: 3px 9px; border-radius: 6px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: help; }
 
-			.qc-card-actions { margin-top: 12px; display: flex; gap: 8px; }
+			.qc-card-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
 			.qc-memo { margin-top: 14px; padding-top: 12px; border-top: 1px dashed #e4e7ec; }
 			.qc-memo-label { font-size: 11.5px; font-weight: 800; color: #8a92a3; margin-bottom: 6px; }
@@ -257,16 +258,18 @@
 							<% End If %>
 						</div>
 					</div>
-					<div class="qc-card-sub">
-						<span class="qc-chip"><%=Server.HTMLEncode(rsList("UnitType"))%></span>
-						<span class="qc-source" title="<%=Server.HTMLEncode(rsList("SourcePage"))%>"><%=Server.HTMLEncode(ShortSource(rsList("SourcePage")))%></span>
-					</div>
-					<div class="qc-card-actions">
-						<% If Not rowIsDone Then %>
-						<a class="qc-btn qc-btn-primary" href="consult_list.asp?ji_num=10&page=<%=pageNum%>&done=<%=rowId%>" onclick="return confirm('처리완료로 표시하시겠습니까?');">완료처리</a>
-						<% Else %>
-						<a class="qc-btn qc-btn-danger" href="consult_list.asp?ji_num=10&page=<%=pageNum%>&del=<%=rowId%>" onclick="return confirm('완료된 신청 건을 삭제하시겠습니까? 삭제 후 복구할 수 없습니다.');">삭제</a>
-						<% End If %>
+					<div class="qc-card-row">
+						<div class="qc-card-tags">
+							<span class="qc-chip"><%=Server.HTMLEncode(rsList("UnitType"))%></span>
+							<span class="qc-source" title="<%=Server.HTMLEncode(rsList("SourcePage"))%>"><%=Server.HTMLEncode(ShortSource(rsList("SourcePage")))%></span>
+						</div>
+						<div class="qc-card-actions">
+							<% If Not rowIsDone Then %>
+							<a class="qc-btn qc-btn-primary" href="consult_list.asp?ji_num=10&page=<%=pageNum%>&done=<%=rowId%>" onclick="return confirm('처리완료로 표시하시겠습니까?');">완료처리</a>
+							<% Else %>
+							<a class="qc-btn qc-btn-danger" href="consult_list.asp?ji_num=10&page=<%=pageNum%>&del=<%=rowId%>" onclick="return confirm('완료된 신청 건을 삭제하시겠습니까? 삭제 후 복구할 수 없습니다.');">삭제</a>
+							<% End If %>
+						</div>
 					</div>
 					<% If rowIsDone Then %>
 					<div class="qc-memo">
