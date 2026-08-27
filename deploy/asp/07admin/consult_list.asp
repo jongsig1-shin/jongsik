@@ -97,6 +97,42 @@
 				Response.Redirect "consult_list.asp?ji_num=10&page=" & pageNum
 			End If
 
+			' ---- 전화상담 수동 등록 (전화로 직접 문의받은 건을 유입경로 '전화상담'으로 리스트에 추가) ----
+			If Request.Form("addPhone") = "1" Then
+				Dim apName, apPhone, apUnit, apMemo, apDone
+				apName = Trim(Request.Form("apName"))
+				apPhone = Trim(Request.Form("apPhone"))
+				apUnit = Trim(Request.Form("apUnit"))
+				apMemo = Trim(Request.Form("apMemo"))
+				apDone = Request.Form("apDone")
+
+				If Len(apName) > 50 Then apName = Left(apName, 50)
+				If Len(apPhone) > 20 Then apPhone = Left(apPhone, 20)
+				If Len(apUnit) > 30 Then apUnit = Left(apUnit, 30)
+				If Len(apMemo) > 300 Then apMemo = Left(apMemo, 300)
+
+				If apName <> "" And apPhone <> "" Then
+					Set cmdAdd = Server.CreateObject("ADODB.Command")
+					With cmdAdd
+						.ActiveConnection = db
+						If apDone = "1" Then
+							.CommandText = "INSERT INTO dbo.QuickConsult (Name, Phone, UnitType, SourcePage, ConsentAgreed, Status, HandledAt, HandledMemo) " & _
+								"VALUES (?, ?, ?, N'전화상담', 1, N'완료', GETDATE(), ?)"
+						Else
+							.CommandText = "INSERT INTO dbo.QuickConsult (Name, Phone, UnitType, SourcePage, ConsentAgreed, HandledMemo) " & _
+								"VALUES (?, ?, ?, N'전화상담', 1, ?)"
+						End If
+						.Parameters.Append .CreateParameter("p_name", 200, 1, 50, apName)
+						.Parameters.Append .CreateParameter("p_phone", 200, 1, 20, apPhone)
+						.Parameters.Append .CreateParameter("p_unit", 200, 1, 30, apUnit)
+						.Parameters.Append .CreateParameter("p_memo", 200, 1, 300, apMemo)
+					End With
+					cmdAdd.Execute , , adCmdText + adExecuteNoRecords
+					Set cmdAdd = Nothing
+				End If
+				Response.Redirect "consult_list.asp?ji_num=10&page=1"
+			End If
+
 			' ---- 전체/미처리/완료 건수 ----
 			Dim totalCount, doneCount, pendingCount
 			Set rsCount = Server.CreateObject("ADODB.Recordset")
@@ -159,9 +195,9 @@
 			.qc-toolbar .qc-quick a:hover { text-decoration: underline; }
 			.qc-hint { color: #9aa1ad; }
 
-			.qc-search { margin-bottom: 14px; }
+			.qc-search { margin-bottom: 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 			.qc-search input {
-				width: 100%; max-width: 320px; box-sizing: border-box;
+				flex: 1 1 auto; width: 100%; max-width: 320px; box-sizing: border-box;
 				border: 1px solid #d7dbe3; border-radius: 8px; padding: 8px 12px; font-size: 13px; font-family: inherit;
 			}
 
@@ -206,6 +242,10 @@
 			.qc-modal h3 { margin: 0 0 4px; font-size: 16px; color: #17233d; }
 			.qc-modal .qc-modal-sub { margin: 0 0 14px; font-size: 12px; color: #8a92a3; }
 			.qc-modal textarea { width: 100%; box-sizing: border-box; border: 1px solid #d7dbe3; border-radius: 8px; padding: 10px 12px; font-family: inherit; font-size: 13.5px; resize: vertical; }
+			.qc-modal-field { margin-bottom: 12px; }
+			.qc-modal-field label { display: block; font-size: 12px; font-weight: 700; color: #5b6472; margin-bottom: 5px; }
+			.qc-modal-field input, .qc-modal-field select { width: 100%; box-sizing: border-box; border: 1px solid #d7dbe3; border-radius: 8px; padding: 9px 12px; font-family: inherit; font-size: 13.5px; }
+			.qc-modal-check { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #5b6472; margin-top: 4px; }
 			.qc-modal-actions { margin-top: 14px; display: flex; justify-content: flex-end; gap: 8px; }
 
 			/* ---- 모바일 화면 대응 ---- */
@@ -241,6 +281,7 @@
 
 			<div class="qc-search">
 				<input type="text" id="qcFilter" placeholder="이름 또는 연락처로 이 페이지 안에서 찾기" oninput="filterRows(this.value)">
+				<button type="button" class="qc-btn qc-btn-ghost" onclick="openAddPhoneModal()">📞 전화상담 등록</button>
 			</div>
 
 			<div class="qc-table-wrap">
@@ -335,6 +376,45 @@
 			</div>
 		</div>
 
+		<!-- 전화상담 수동 등록 모달 -->
+		<div class="qc-modal-overlay" id="qcAddPhoneOverlay" onclick="if(event.target===this) closeAddPhoneModal();">
+			<div class="qc-modal">
+				<h3>전화상담 등록</h3>
+				<p class="qc-modal-sub">전화로 직접 받은 문의를 유입경로 "전화상담"으로 목록에 추가합니다.</p>
+				<form method="post" action="consult_list.asp?ji_num=10&page=1">
+					<input type="hidden" name="addPhone" value="1">
+					<div class="qc-modal-field">
+						<label for="apName">이름</label>
+						<input type="text" name="apName" id="apName" maxlength="50" required>
+					</div>
+					<div class="qc-modal-field">
+						<label for="apPhone">연락처</label>
+						<input type="tel" name="apPhone" id="apPhone" maxlength="20" placeholder="010-0000-0000" required>
+					</div>
+					<div class="qc-modal-field">
+						<label for="apUnit">관심 평형 (선택)</label>
+						<select name="apUnit" id="apUnit">
+							<option value="">선택 안 함</option>
+							<option value="전용 84㎡">전용 84㎡</option>
+							<option value="85㎡초과">85㎡초과</option>
+						</select>
+					</div>
+					<div class="qc-modal-field">
+						<label for="apMemo">상담메모 (선택)</label>
+						<textarea name="apMemo" id="apMemo" rows="3" maxlength="300" placeholder="통화 내용을 남겨두세요"></textarea>
+					</div>
+					<label class="qc-modal-check">
+						<input type="checkbox" name="apDone" value="1" checked>
+						<span>바로 완료 처리 (체크 해제 시 미처리로 등록)</span>
+					</label>
+					<div class="qc-modal-actions">
+						<button type="button" class="qc-btn qc-btn-ghost" onclick="closeAddPhoneModal()">취소</button>
+						<button type="submit" class="qc-btn qc-btn-save">등록</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
 		<script>
 		function pad2(n) { return (n < 10 ? '0' : '') + n; }
 		function toDateStr(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
@@ -363,8 +443,15 @@
 		function closeMemoModal() {
 			document.getElementById('qcModalOverlay').classList.remove('show');
 		}
+		function openAddPhoneModal() {
+			document.getElementById('qcAddPhoneOverlay').classList.add('show');
+			document.getElementById('apName').focus();
+		}
+		function closeAddPhoneModal() {
+			document.getElementById('qcAddPhoneOverlay').classList.remove('show');
+		}
 		document.addEventListener('keydown', function (e) {
-			if (e.key === 'Escape') closeMemoModal();
+			if (e.key === 'Escape') { closeMemoModal(); closeAddPhoneModal(); }
 		});
 
 		function filterRows(q) {
