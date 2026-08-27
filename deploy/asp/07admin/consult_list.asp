@@ -252,8 +252,8 @@
 			.qc-modal textarea { width: 100%; box-sizing: border-box; border: 1px solid #d7dbe3; border-radius: 8px; padding: 10px 12px; font-family: inherit; font-size: 13.5px; resize: vertical; }
 			.qc-modal-field { margin-bottom: 12px; }
 			.qc-modal-field label { display: block; font-size: 12px; font-weight: 700; color: #5b6472; margin-bottom: 5px; }
-			.qc-modal-field input, .qc-modal-field select { width: 100% !important; max-width: none !important; box-sizing: border-box; border: 1px solid #d7dbe3; border-radius: 8px; padding: 9px 30px 9px 12px; font-family: inherit; font-size: 13.5px; }
-			.qc-modal-field select { min-width: 0; }
+			.qc-modal-field input, .qc-modal-field select { width: 100% !important; max-width: none !important; box-sizing: border-box; border: 1px solid #d7dbe3; border-radius: 8px; padding: 9px 30px 9px 12px; font-family: inherit; font-size: 13.5px; line-height: normal; }
+			.qc-modal-field select { min-width: 0; height: 40px !important; padding-top: 0 !important; padding-bottom: 0 !important; }
 			.qc-modal-check { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #5b6472; margin-top: 4px; }
 			.qc-modal-actions { margin-top: 14px; display: flex; justify-content: flex-end; gap: 8px; }
 
