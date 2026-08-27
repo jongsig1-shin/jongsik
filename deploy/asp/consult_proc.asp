@@ -15,6 +15,34 @@ Response.ExpiresAbsolute = Now() - 1
 Response.AddHeader "Cache-Control", "no-cache, no-store, must-revalidate"
 Response.AddHeader "Pragma", "no-cache"
 
+' 연락처를 숫자만 추려서 010-1234-5678 같은 표준 하이픈 형식으로 재구성 —
+' 사용자가 하이픈 없이("01012345678") 또는 공백 섞어서 입력해도 관리자 리스트에서는
+' 전화상담 수동 등록 건과 동일한 형식으로 보이도록 통일함
+Function FormatPhone(raw)
+    Dim i, ch, digits
+    digits = ""
+    For i = 1 To Len(raw)
+        ch = Mid(raw, i, 1)
+        If ch >= "0" And ch <= "9" Then digits = digits & ch
+    Next
+
+    Select Case Len(digits)
+        Case 11
+            FormatPhone = Left(digits, 3) & "-" & Mid(digits, 4, 4) & "-" & Mid(digits, 8, 4)
+        Case 10
+            If Left(digits, 2) = "02" Then
+                FormatPhone = Left(digits, 2) & "-" & Mid(digits, 3, 4) & "-" & Mid(digits, 7, 4)
+            Else
+                FormatPhone = Left(digits, 3) & "-" & Mid(digits, 4, 3) & "-" & Mid(digits, 7, 4)
+            End If
+        Case 9
+            FormatPhone = Left(digits, 2) & "-" & Mid(digits, 3, 3) & "-" & Mid(digits, 6, 4)
+        Case Else
+            ' 자릿수가 애매하면 원래 입력을 그대로 둠 (임의로 잘못 끊어 붙이지 않기 위함)
+            FormatPhone = raw
+    End Select
+End Function
+
 Sub WriteUTF8(text)
     Dim stream
     Set stream = Server.CreateObject("ADODB.Stream")
@@ -47,6 +75,8 @@ End If
 
 ' 길이 방어 (테이블 컬럼 크기와 맞춤)
 If Len(reqName) > 50 Then reqName = Left(reqName, 50)
+If Len(reqPhone) > 20 Then reqPhone = Left(reqPhone, 20)
+reqPhone = FormatPhone(reqPhone)
 If Len(reqPhone) > 20 Then reqPhone = Left(reqPhone, 20)
 If Len(reqUnit) > 30 Then reqUnit = Left(reqUnit, 30)
 If Len(reqMessage) > 500 Then reqMessage = Left(reqMessage, 500)

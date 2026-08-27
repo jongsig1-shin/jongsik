@@ -115,6 +115,7 @@
 				apDone = Request.Form("apDone")
 
 				If Len(apName) > 50 Then apName = Left(apName, 50)
+				apPhone = FormatPhone(apPhone)
 				If Len(apPhone) > 20 Then apPhone = Left(apPhone, 20)
 				If Len(apUnit) > 30 Then apUnit = Left(apUnit, 30)
 				If Len(apMemo) > 300 Then apMemo = Left(apMemo, 300)
@@ -187,6 +188,32 @@
 			Function FormatCompactDate(dt)
 				FormatCompactDate = Year(dt) & "-" & Right("0" & Month(dt), 2) & "-" & Right("0" & Day(dt), 2) & _
 					" " & Right("0" & Hour(dt), 2) & ":" & Right("0" & Minute(dt), 2)
+			End Function
+
+			' 연락처를 숫자만 추려서 010-1234-5678 형식으로 재구성 (consult_proc.asp의 동명 함수와 동일 규칙 —
+			' QR로 들어온 신청과 전화상담 수동 등록 건의 연락처 표기를 통일하기 위함)
+			Function FormatPhone(raw)
+				Dim i, ch, digits
+				digits = ""
+				For i = 1 To Len(raw)
+					ch = Mid(raw, i, 1)
+					If ch >= "0" And ch <= "9" Then digits = digits & ch
+				Next
+
+				Select Case Len(digits)
+					Case 11
+						FormatPhone = Left(digits, 3) & "-" & Mid(digits, 4, 4) & "-" & Mid(digits, 8, 4)
+					Case 10
+						If Left(digits, 2) = "02" Then
+							FormatPhone = Left(digits, 2) & "-" & Mid(digits, 3, 4) & "-" & Mid(digits, 7, 4)
+						Else
+							FormatPhone = Left(digits, 3) & "-" & Mid(digits, 4, 3) & "-" & Mid(digits, 7, 4)
+						End If
+					Case 9
+						FormatPhone = Left(digits, 2) & "-" & Mid(digits, 3, 3) & "-" & Mid(digits, 6, 4)
+					Case Else
+						FormatPhone = raw
+				End Select
 			End Function
 		%>
 
