@@ -14,6 +14,14 @@
 
 		<%
 			' db 연결과 ad* 상수는 top.asp 체인에서 이미 로드되어 있어 다시 include하지 않음(ASP 0141 방지)
+			' ---- PC에서 새로고침해도 브라우저에 남아있던 예전 화면이 아니라 항상 서버의 최신 내용을 받도록 캐시 방지 ----
+			' (top.asp가 이미 실행됐지만 IIS 기본 버퍼링 덕분에 아직 실제로 전송되지는 않은 시점이라 헤더 추가 가능 —
+			'  이 파일의 Response.Redirect들이 top.asp 이후에도 정상 동작하는 것과 같은 원리)
+			Response.CacheControl = "no-cache"
+			Response.AddHeader "Pragma", "no-cache"
+			Response.Expires = -1
+			Response.ExpiresAbsolute = Now() - 1
+
 			' ---- 권한 체크: 관리자(1)·운영자(2)만 접근 가능 ----
 			Dim cookies_adID, cookies_meID
 			cookies_adID = request.cookies("admin")("ad_id")
