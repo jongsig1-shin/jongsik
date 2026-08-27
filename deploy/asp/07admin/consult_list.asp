@@ -136,6 +136,14 @@
 					ShortSource = s
 				End If
 			End Function
+
+			' 신청일시를 서버 지역설정과 무관하게 항상 같은 짧은 형식(yyyy-mm-dd hh:mm)으로 표시
+			' — rsList("RequestedAt")를 그대로 출력하면 서버 설정에 따라 길이가 달라져서
+			'    "신청일시" 칸 폭을 예측할 수 없고, 옆의 "이름" 칸과 겹쳐 보일 수 있음
+			Function FormatCompactDate(dt)
+				FormatCompactDate = Year(dt) & "-" & Right("0" & Month(dt), 2) & "-" & Right("0" & Day(dt), 2) & _
+					" " & Right("0" & Hour(dt), 2) & ":" & Right("0" & Minute(dt), 2)
+			End Function
 		%>
 
 		<style>
@@ -165,9 +173,9 @@
 
 			/* ---- 한 줄 표기 목록 (CSS Grid) ---- */
 			.qc-table-wrap { border: 1px solid #e4e7ec; border-radius: 12px; background: #fff; overflow-x: auto; }
-			.qc-table { display: grid; grid-template-columns: 108px 66px 118px 92px minmax(90px,1fr) 60px auto; min-width: 780px; }
+			.qc-table { display: grid; grid-template-columns: 150px 66px 118px 92px minmax(90px,1fr) 60px auto; min-width: 820px; }
 			.qc-row { display: contents; }
-			.qc-thead, .qc-row-cell { padding: 10px 12px; display: flex; align-items: center; border-bottom: 1px solid #eef0f3; font-size: 12.5px; white-space: nowrap; }
+			.qc-thead, .qc-row-cell { padding: 10px 12px; display: flex; align-items: center; border-bottom: 1px solid #eef0f3; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 			.qc-thead { background: #f6f7f9; font-size: 11px; font-weight: 800; color: #8a92a3; }
 			.qc-row-cell { color: #1f2430; }
 
@@ -268,7 +276,7 @@
 								End If
 					%>
 					<div class="qc-row" data-key="<%=LCase(rowNameEnc)%> <%=LCase(rowPhoneEnc)%>">
-						<div class="qc-row-cell qc-r-date"><%=rsList("RequestedAt")%></div>
+						<div class="qc-row-cell qc-r-date"><%=FormatCompactDate(rsList("RequestedAt"))%></div>
 						<div class="qc-row-cell qc-r-name"><%=rowNameEnc%></div>
 						<div class="qc-row-cell qc-r-phone"><%=rowPhoneEnc%></div>
 						<div class="qc-row-cell"><% If rsList("UnitType") <> "" Then %><span class="qc-chip"><%=Server.HTMLEncode(rsList("UnitType"))%></span><% End If %></div>
