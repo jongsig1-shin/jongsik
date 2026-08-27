@@ -238,13 +238,14 @@
 				align-items: center; justify-content: center; padding: 16px;
 			}
 			.qc-modal-overlay.show { display: flex; }
-			.qc-modal { background: #fff; border-radius: 14px; width: 100%; max-width: 420px; padding: 22px 24px; box-shadow: 0 30px 60px -20px rgba(0,0,0,0.4); }
+			.qc-modal { background: #fff; border-radius: 14px; width: 100%; max-width: 460px; padding: 22px 24px; box-shadow: 0 30px 60px -20px rgba(0,0,0,0.4); }
 			.qc-modal h3 { margin: 0 0 4px; font-size: 16px; color: #17233d; }
 			.qc-modal .qc-modal-sub { margin: 0 0 14px; font-size: 12px; color: #8a92a3; }
 			.qc-modal textarea { width: 100%; box-sizing: border-box; border: 1px solid #d7dbe3; border-radius: 8px; padding: 10px 12px; font-family: inherit; font-size: 13.5px; resize: vertical; }
 			.qc-modal-field { margin-bottom: 12px; }
 			.qc-modal-field label { display: block; font-size: 12px; font-weight: 700; color: #5b6472; margin-bottom: 5px; }
-			.qc-modal-field input, .qc-modal-field select { width: 100%; box-sizing: border-box; border: 1px solid #d7dbe3; border-radius: 8px; padding: 9px 12px; font-family: inherit; font-size: 13.5px; }
+			.qc-modal-field input, .qc-modal-field select { width: 100% !important; max-width: none !important; box-sizing: border-box; border: 1px solid #d7dbe3; border-radius: 8px; padding: 9px 30px 9px 12px; font-family: inherit; font-size: 13.5px; }
+			.qc-modal-field select { min-width: 0; }
 			.qc-modal-check { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #5b6472; margin-top: 4px; }
 			.qc-modal-actions { margin-top: 14px; display: flex; justify-content: flex-end; gap: 8px; }
 
