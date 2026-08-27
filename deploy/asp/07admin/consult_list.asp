@@ -45,29 +45,14 @@
 				Response.End
 			End If
 
-			' ---- 페이지 번호 (15건씩) ----
-			Const PAGE_SIZE = 5
+			' ---- 페이지 번호 (한 줄 표기로 바뀌어 카드 방식보다 훨씬 짧아졌으므로 15건씩) ----
+			Const PAGE_SIZE = 15
 			Dim pageNum
 			pageNum = Request.QueryString("page")
 			If Not IsNumeric(pageNum) Or CLng(pageNum) < 1 Then
 				pageNum = 1
 			Else
 				pageNum = CLng(pageNum)
-			End If
-
-			' ---- 처리완료 토글 ----
-			Dim actId
-			actId = Request.QueryString("done")
-			If actId <> "" And IsNumeric(actId) Then
-				Set cmdUpd = Server.CreateObject("ADODB.Command")
-				With cmdUpd
-					.ActiveConnection = db
-					.CommandText = "UPDATE dbo.QuickConsult SET Status=N'완료', HandledAt=GETDATE() WHERE Id=?"
-					.Parameters.Append .CreateParameter("p_id", 3, 1, , CLng(actId))
-				End With
-				cmdUpd.Execute , , adCmdText + adExecuteNoRecords
-				Set cmdUpd = Nothing
-				Response.Redirect "consult_list.asp?ji_num=10&page=" & pageNum
 			End If
 
 			' ---- 삭제 (완료된 건만 허용 — 서버단에서도 Status=완료 조건을 같이 검사) ----
@@ -85,17 +70,25 @@
 				Response.Redirect "consult_list.asp?ji_num=10&page=" & pageNum
 			End If
 
-			' ---- 상담메모 저장 (완료된 건에 한해, 답글 형태로 상담 내용 기록) ----
+			' ---- 상담처리(완료 표시) + 상담메모 저장을 하나의 팝업창에서 한 번에 처리 ----
+			' markDone=1 이면 미처리 건을 완료로 바꾸면서 메모도 같이 저장,
+			' markDone=0 이면(이미 완료된 건의 "상담내용보기") 메모만 수정 저장
 			Dim postMemoId
 			postMemoId = Request.Form("memoId")
 			If postMemoId <> "" And IsNumeric(postMemoId) Then
-				Dim postMemoText
+				Dim postMemoText, postMarkDone
 				postMemoText = Trim(Request.Form("memoText"))
 				If Len(postMemoText) > 300 Then postMemoText = Left(postMemoText, 300)
+				postMarkDone = Request.Form("markDone")
+
 				Set cmdMemo = Server.CreateObject("ADODB.Command")
 				With cmdMemo
 					.ActiveConnection = db
-					.CommandText = "UPDATE dbo.QuickConsult SET HandledMemo=? WHERE Id=? AND Status=N'완료'"
+					If postMarkDone = "1" Then
+						.CommandText = "UPDATE dbo.QuickConsult SET Status=N'완료', HandledAt=GETDATE(), HandledMemo=? WHERE Id=?"
+					Else
+						.CommandText = "UPDATE dbo.QuickConsult SET HandledMemo=? WHERE Id=? AND Status=N'완료'"
+					End If
 					.Parameters.Append .CreateParameter("p_memo", 200, 1, 300, postMemoText)
 					.Parameters.Append .CreateParameter("p_id", 3, 1, , CLng(postMemoId))
 				End With
@@ -137,8 +130,8 @@
 				s = raw & ""
 				If Left(s, 3) = "qr:" Then
 					ShortSource = "QR·" & Mid(s, 4)
-				ElseIf Len(s) > 26 Then
-					ShortSource = Left(s, 26) & "..."
+				ElseIf Len(s) > 18 Then
+					ShortSource = Left(s, 18) & "..."
 				Else
 					ShortSource = s
 				End If
@@ -152,43 +145,60 @@
 			.qc-stat b { font-size: 17px; color: #17233d; display: block; margin-top: 2px; }
 			.qc-stat.qc-stat-pending b { color: #c0392b; }
 
-			.qc-toolbar { background: #fff; border: 1px solid #e4e7ec; border-radius: 12px; padding: 14px 18px; margin-bottom: 18px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 13px; }
+			.qc-toolbar { background: #fff; border: 1px solid #e4e7ec; border-radius: 12px; padding: 14px 18px; margin-bottom: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 13px; }
 			.qc-toolbar input[type=date] { border: 1px solid #d7dbe3; border-radius: 6px; padding: 5px 8px; font-size: 13px; }
 			.qc-toolbar .qc-quick a { color: #8a5a17; text-decoration: none; }
 			.qc-toolbar .qc-quick a:hover { text-decoration: underline; }
 			.qc-hint { color: #9aa1ad; }
 
-			.qc-btn, a.qc-btn:link, a.qc-btn:visited { display: inline-block; border-radius: 7px; padding: 6px 14px; font-size: 12.5px; font-weight: 700; text-decoration: none; border: 1px solid transparent; cursor: pointer; }
+			.qc-search { margin-bottom: 14px; }
+			.qc-search input {
+				width: 100%; max-width: 320px; box-sizing: border-box;
+				border: 1px solid #d7dbe3; border-radius: 8px; padding: 8px 12px; font-size: 13px; font-family: inherit;
+			}
+
+			.qc-btn, a.qc-btn:link, a.qc-btn:visited { display: inline-block; border-radius: 7px; padding: 6px 14px; font-size: 12.5px; font-weight: 700; text-decoration: none; border: 1px solid transparent; cursor: pointer; white-space: nowrap; }
 			.qc-btn-primary, a.qc-btn-primary:link, a.qc-btn-primary:visited, a.qc-btn-primary:hover { background: #17233d !important; color: #fdfbf6 !important; }
+			.qc-btn-ghost, a.qc-btn-ghost:link, a.qc-btn-ghost:visited, a.qc-btn-ghost:hover { background: #fff !important; color: #17233d !important; border-color: #c7ccd6; }
 			.qc-btn-danger, a.qc-btn-danger:link, a.qc-btn-danger:visited, a.qc-btn-danger:hover { background: #fff !important; color: #c0392b !important; border-color: #f0c1ba; }
 			.qc-btn-save { background: #b9862f !important; color: #231604 !important; }
 
-			.qc-list { display: flex; flex-direction: column; gap: 10px; }
-			.qc-card { background: #fff; border: 1px solid #e4e7ec; border-radius: 12px; padding: 16px 18px; }
-			.qc-card-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-			.qc-name { font-size: 15px; font-weight: 900; color: #17233d; margin-right: 10px; }
-			.qc-phone { font-size: 14px; color: #3a4152; font-variant-numeric: tabular-nums; }
-			.qc-date { font-size: 12px; color: #8a92a3; margin-right: 10px; }
-			.qc-status { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 800; }
+			/* ---- 한 줄 표기 목록 (CSS Grid) ---- */
+			.qc-table-wrap { border: 1px solid #e4e7ec; border-radius: 12px; background: #fff; overflow-x: auto; }
+			.qc-table { display: grid; grid-template-columns: 108px 66px 118px 92px minmax(90px,1fr) 60px auto; min-width: 780px; }
+			.qc-row { display: contents; }
+			.qc-thead, .qc-row-cell { padding: 10px 12px; display: flex; align-items: center; border-bottom: 1px solid #eef0f3; font-size: 12.5px; white-space: nowrap; }
+			.qc-thead { background: #f6f7f9; font-size: 11px; font-weight: 800; color: #8a92a3; }
+			.qc-row-cell { color: #1f2430; }
+
+			.qc-r-name { font-weight: 900; color: #17233d; overflow: hidden; text-overflow: ellipsis; }
+			.qc-r-date { color: #8a92a3; font-size: 11.5px; }
+			.qc-r-phone { font-variant-numeric: tabular-nums; }
+			.qc-chip { background: #f1f0e9; color: #7a5c1e; font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+			.qc-source { font-size: 10.5px; color: #8a92a3; background: #f6f7f9; padding: 2px 8px; border-radius: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: help; max-width: 100%; }
+			.qc-status { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 10.5px; font-weight: 800; }
 			.qc-status-pending { background: #fdecea; color: #c0392b; }
 			.qc-status-done { background: #e8f5e9; color: #2e7d32; }
-
-			.qc-card-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
-			.qc-card-tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-			.qc-chip { background: #f1f0e9; color: #7a5c1e; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
-			.qc-source { font-size: 11px; color: #8a92a3; background: #f6f7f9; padding: 3px 9px; border-radius: 6px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: help; }
-
-			.qc-card-actions { display: flex; gap: 8px; flex-shrink: 0; }
-
-			.qc-memo { margin-top: 14px; padding-top: 12px; border-top: 1px dashed #e4e7ec; }
-			.qc-memo-label { font-size: 11.5px; font-weight: 800; color: #8a92a3; margin-bottom: 6px; }
-			.qc-memo textarea { width: 100%; box-sizing: border-box; border: 1px solid #d7dbe3; border-radius: 8px; padding: 8px 10px; font-family: inherit; font-size: 13px; resize: vertical; }
-			.qc-memo-actions { margin-top: 6px; text-align: right; }
+			.qc-r-actions { gap: 6px; }
+			.qc-memo-flag { color: #b9862f; font-size: 13px; margin-left: 2px; }
 
 			.qc-empty { text-align: center; padding: 40px 0; color: #8a92a3; font-size: 13px; }
 			.qc-pagination { margin-top: 18px; text-align: center; font-size: 13px; color: #5b6472; }
 			.qc-pagination a { color: #17233d; text-decoration: none; font-weight: 700; padding: 4px 10px; }
 			.qc-pagination a:hover { text-decoration: underline; }
+
+			/* ---- 상담메모 입력/보기 모달 ---- */
+			.qc-modal-overlay {
+				display: none; position: fixed; inset: 0; z-index: 999;
+				background: rgba(15,20,30,0.5);
+				align-items: center; justify-content: center; padding: 16px;
+			}
+			.qc-modal-overlay.show { display: flex; }
+			.qc-modal { background: #fff; border-radius: 14px; width: 100%; max-width: 420px; padding: 22px 24px; box-shadow: 0 30px 60px -20px rgba(0,0,0,0.4); }
+			.qc-modal h3 { margin: 0 0 4px; font-size: 16px; color: #17233d; }
+			.qc-modal .qc-modal-sub { margin: 0 0 14px; font-size: 12px; color: #8a92a3; }
+			.qc-modal textarea { width: 100%; box-sizing: border-box; border: 1px solid #d7dbe3; border-radius: 8px; padding: 10px 12px; font-family: inherit; font-size: 13.5px; resize: vertical; }
+			.qc-modal-actions { margin-top: 14px; display: flex; justify-content: flex-end; gap: 8px; }
 
 			/* ---- 모바일 화면 대응 ---- */
 			@media (max-width: 640px) {
@@ -198,13 +208,7 @@
 				.qc-toolbar label { flex: 1 1 auto; }
 				.qc-toolbar input[type=date] { width: 100%; }
 				.qc-toolbar .qc-quick { width: 100%; }
-				.qc-card { padding: 12px 14px; }
-				.qc-card-top { flex-direction: column; align-items: flex-start; gap: 4px; }
-				.qc-card-top > div:last-child { display: flex; align-items: center; gap: 8px; }
-				.qc-card-row { flex-direction: column; align-items: stretch; }
-				.qc-card-actions { width: 100%; }
-				.qc-card-actions .qc-btn { flex: 1 1 auto; text-align: center; padding: 9px 14px; }
-				.qc-source { max-width: 55vw; }
+				.qc-search input { max-width: none; }
 			}
 		</style>
 
@@ -226,88 +230,73 @@
 					<a href="javascript:void(0)" onclick="setRange(29)">최근 30일</a>
 				</span>
 			</form>
-			<script>
-			function pad2(n) { return (n < 10 ? '0' : '') + n; }
-			function toDateStr(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
-			function setRange(daysBack) {
-				var to = new Date();
-				var from = new Date();
-				from.setDate(to.getDate() - daysBack);
-				document.getElementById('expFrom').value = toDateStr(from);
-				document.getElementById('expTo').value = toDateStr(to);
-			}
-			</script>
 
-			<div class="qc-list">
-				<%
-					Set rsList = Server.CreateObject("ADODB.Recordset")
-					rsList.Open "SELECT Id, RequestedAt, Name, Phone, UnitType, SourcePage, Status, HandledMemo FROM (" & _
-						"SELECT ROW_NUMBER() OVER (ORDER BY RequestedAt DESC) AS RowNum, Id, RequestedAt, Name, Phone, UnitType, SourcePage, Status, HandledMemo " & _
-						"FROM dbo.QuickConsult) AS T WHERE RowNum BETWEEN " & startRow & " AND " & endRow & " ORDER BY RowNum", db, 0, 1
+			<div class="qc-search">
+				<input type="text" id="qcFilter" placeholder="이름 또는 연락처로 이 페이지 안에서 찾기" oninput="filterRows(this.value)">
+			</div>
 
-					If rsList.bof Or rsList.eof Then
-				%>
-				<div class="qc-empty">신청 내역이 없습니다.</div>
-				<%
-					Else
-						Do While Not rsList.eof
-							Dim rowId, rowMemo, rowIsDone
-							rowId = rsList("Id")
-							rowIsDone = (rsList("Status") = "완료")
-							If IsNull(rsList("HandledMemo")) Then
-								rowMemo = ""
-							Else
-								rowMemo = rsList("HandledMemo")
-							End If
-				%>
-				<div class="qc-card">
-					<div class="qc-card-top">
-						<div>
-							<span class="qc-name"><%=Server.HTMLEncode(rsList("Name"))%></span>
-							<span class="qc-phone"><%=Server.HTMLEncode(rsList("Phone"))%></span>
-						</div>
-						<div>
-							<span class="qc-date"><%=rsList("RequestedAt")%></span>
+			<div class="qc-table-wrap">
+				<div class="qc-table" id="qcTable">
+					<div class="qc-thead">신청일시</div>
+					<div class="qc-thead">이름</div>
+					<div class="qc-thead">연락처</div>
+					<div class="qc-thead">관심평형</div>
+					<div class="qc-thead">유입경로</div>
+					<div class="qc-thead">상태</div>
+					<div class="qc-thead">처리</div>
+					<%
+						Set rsList = Server.CreateObject("ADODB.Recordset")
+						rsList.Open "SELECT Id, RequestedAt, Name, Phone, UnitType, SourcePage, Status, HandledMemo FROM (" & _
+							"SELECT ROW_NUMBER() OVER (ORDER BY RequestedAt DESC) AS RowNum, Id, RequestedAt, Name, Phone, UnitType, SourcePage, Status, HandledMemo " & _
+							"FROM dbo.QuickConsult) AS T WHERE RowNum BETWEEN " & startRow & " AND " & endRow & " ORDER BY RowNum", db, 0, 1
+
+						If rsList.bof Or rsList.eof Then
+					%>
+					<div class="qc-empty" style="grid-column: 1 / -1;">신청 내역이 없습니다.</div>
+					<%
+						Else
+							Do While Not rsList.eof
+								Dim rowId, rowMemo, rowIsDone, rowNameEnc, rowPhoneEnc
+								rowId = rsList("Id")
+								rowIsDone = (rsList("Status") = "완료")
+								rowNameEnc = Server.HTMLEncode(rsList("Name"))
+								rowPhoneEnc = Server.HTMLEncode(rsList("Phone"))
+								If IsNull(rsList("HandledMemo")) Then
+									rowMemo = ""
+								Else
+									rowMemo = rsList("HandledMemo")
+								End If
+					%>
+					<div class="qc-row" data-key="<%=LCase(rowNameEnc)%> <%=LCase(rowPhoneEnc)%>">
+						<div class="qc-row-cell qc-r-date"><%=rsList("RequestedAt")%></div>
+						<div class="qc-row-cell qc-r-name"><%=rowNameEnc%></div>
+						<div class="qc-row-cell qc-r-phone"><%=rowPhoneEnc%></div>
+						<div class="qc-row-cell"><% If rsList("UnitType") <> "" Then %><span class="qc-chip"><%=Server.HTMLEncode(rsList("UnitType"))%></span><% End If %></div>
+						<div class="qc-row-cell"><span class="qc-source" title="<%=Server.HTMLEncode(rsList("SourcePage"))%>"><%=Server.HTMLEncode(ShortSource(rsList("SourcePage")))%></span></div>
+						<div class="qc-row-cell">
 							<% If rowIsDone Then %>
 							<span class="qc-status qc-status-done">완료</span>
 							<% Else %>
 							<span class="qc-status qc-status-pending">미처리</span>
 							<% End If %>
 						</div>
-					</div>
-					<div class="qc-card-row">
-						<div class="qc-card-tags">
-							<span class="qc-chip"><%=Server.HTMLEncode(rsList("UnitType"))%></span>
-							<span class="qc-source" title="<%=Server.HTMLEncode(rsList("SourcePage"))%>"><%=Server.HTMLEncode(ShortSource(rsList("SourcePage")))%></span>
-						</div>
-						<div class="qc-card-actions">
+						<div class="qc-row-cell qc-r-actions">
 							<% If Not rowIsDone Then %>
-							<a class="qc-btn qc-btn-primary" href="consult_list.asp?ji_num=10&page=<%=pageNum%>&done=<%=rowId%>" onclick="return confirm('상담처리로 표시하시겠습니까?');">상담처리</a>
+							<a class="qc-btn qc-btn-primary" href="javascript:void(0)" data-id="<%=rowId%>" data-memo="" data-done="1" onclick="openMemoModal(this)">상담처리</a>
 							<% Else %>
+							<a class="qc-btn qc-btn-ghost" href="javascript:void(0)" data-id="<%=rowId%>" data-memo="<%=Server.HTMLEncode(rowMemo)%>" data-done="0" onclick="openMemoModal(this)">상담내용보기<% If rowMemo <> "" Then %><span class="qc-memo-flag">●</span><% End If %></a>
 							<a class="qc-btn qc-btn-danger" href="consult_list.asp?ji_num=10&page=<%=pageNum%>&del=<%=rowId%>" onclick="return confirm('완료된 신청 건을 삭제하시겠습니까? 삭제 후 복구할 수 없습니다.');">삭제</a>
 							<% End If %>
 						</div>
 					</div>
-					<% If rowIsDone Then %>
-					<div class="qc-memo">
-						<div class="qc-memo-label">상담메모</div>
-						<form method="post" action="consult_list.asp?ji_num=10&page=<%=pageNum%>">
-							<input type="hidden" name="memoId" value="<%=rowId%>">
-							<textarea name="memoText" rows="2" maxlength="300" placeholder="상담 진행 내용을 남겨두세요 (최대 300자)"><%=Server.HTMLEncode(rowMemo)%></textarea>
-							<div class="qc-memo-actions">
-								<button type="submit" class="qc-btn qc-btn-save">저장</button>
-							</div>
-						</form>
-					</div>
-					<% End If %>
+					<%
+								rsList.movenext
+							Loop
+						End If
+						rsList.close
+						Set rsList = Nothing
+					%>
 				</div>
-				<%
-							rsList.movenext
-						Loop
-					End If
-					rsList.close
-					Set rsList = Nothing
-				%>
 			</div>
 
 			<div class="qc-pagination">
@@ -320,6 +309,65 @@
 				<% End If %>
 			</div>
 		</div>
+
+		<!-- 상담처리 / 상담내용보기 공용 모달 -->
+		<div class="qc-modal-overlay" id="qcModalOverlay" onclick="if(event.target===this) closeMemoModal();">
+			<div class="qc-modal">
+				<h3 id="qcModalTitle">상담처리</h3>
+				<p class="qc-modal-sub" id="qcModalSub">상담 진행 내용을 남겨두시면 다음에 보기 편합니다.</p>
+				<form method="post" action="consult_list.asp?ji_num=10&page=<%=pageNum%>">
+					<input type="hidden" name="memoId" id="qcModalId" value="">
+					<input type="hidden" name="markDone" id="qcModalMarkDone" value="0">
+					<textarea name="memoText" id="qcModalText" rows="5" maxlength="300" placeholder="예) 2차 방문상담 예약, 8/30 오후 2시 방문 예정"></textarea>
+					<div class="qc-modal-actions">
+						<button type="button" class="qc-btn qc-btn-ghost" onclick="closeMemoModal()">취소</button>
+						<button type="submit" class="qc-btn qc-btn-save">저장</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<script>
+		function pad2(n) { return (n < 10 ? '0' : '') + n; }
+		function toDateStr(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+		function setRange(daysBack) {
+			var to = new Date();
+			var from = new Date();
+			from.setDate(to.getDate() - daysBack);
+			document.getElementById('expFrom').value = toDateStr(from);
+			document.getElementById('expTo').value = toDateStr(to);
+		}
+
+		function openMemoModal(el) {
+			var id = el.getAttribute('data-id');
+			var memo = el.getAttribute('data-memo');
+			var markDone = el.getAttribute('data-done') === '1';
+			document.getElementById('qcModalId').value = id;
+			document.getElementById('qcModalText').value = memo;
+			document.getElementById('qcModalMarkDone').value = markDone ? '1' : '0';
+			document.getElementById('qcModalTitle').textContent = markDone ? '상담처리' : '상담내용 보기/수정';
+			document.getElementById('qcModalSub').textContent = markDone
+				? '완료 처리되며, 입력한 내용은 상담메모로 저장됩니다.'
+				: '저장된 상담메모를 확인하고 수정할 수 있습니다.';
+			document.getElementById('qcModalOverlay').classList.add('show');
+			document.getElementById('qcModalText').focus();
+		}
+		function closeMemoModal() {
+			document.getElementById('qcModalOverlay').classList.remove('show');
+		}
+		document.addEventListener('keydown', function (e) {
+			if (e.key === 'Escape') closeMemoModal();
+		});
+
+		function filterRows(q) {
+			q = q.toLowerCase().trim();
+			var rows = document.querySelectorAll('#qcTable .qc-row');
+			rows.forEach(function (row) {
+				var key = row.getAttribute('data-key') || '';
+				row.style.display = (q === '' || key.indexOf(q) !== -1) ? 'contents' : 'none';
+			});
+		}
+		</script>
 	</section>
 </main>
 
