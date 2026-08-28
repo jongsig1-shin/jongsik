@@ -107,12 +107,13 @@
 
 			' ---- 전화상담 수동 등록 (전화로 직접 문의받은 건을 유입경로 '전화상담'으로 리스트에 추가) ----
 			If Request.Form("addPhone") = "1" Then
-				Dim apName, apPhone, apUnit, apMemo, apDone
+				Dim apName, apPhone, apUnit, apMemo, apDone, apVisitDate
 				apName = Trim(Request.Form("apName"))
 				apPhone = Trim(Request.Form("apPhone"))
 				apUnit = Trim(Request.Form("apUnit"))
 				apMemo = Trim(Request.Form("apMemo"))
 				apDone = Request.Form("apDone")
+				apVisitDate = Trim(Request.Form("apVisitDate"))
 
 				If Len(apName) > 50 Then apName = Left(apName, 50)
 				apPhone = FormatPhone(apPhone)
@@ -120,21 +121,28 @@
 				If Len(apUnit) > 30 Then apUnit = Left(apUnit, 30)
 				If Len(apMemo) > 300 Then apMemo = Left(apMemo, 300)
 
+				Dim apVisitDateValue
+				apVisitDateValue = Null
+				If apVisitDate <> "" And IsDate(apVisitDate) Then
+					apVisitDateValue = CDate(apVisitDate)
+				End If
+
 				If apName <> "" And apPhone <> "" Then
 					Set cmdAdd = Server.CreateObject("ADODB.Command")
 					With cmdAdd
 						.ActiveConnection = db
 						If apDone = "1" Then
-							.CommandText = "INSERT INTO dbo.QuickConsult (Name, Phone, UnitType, SourcePage, ConsentAgreed, Status, HandledAt, HandledMemo) " & _
-								"VALUES (?, ?, ?, N'전화상담', 1, N'완료', GETDATE(), ?)"
+							.CommandText = "INSERT INTO dbo.QuickConsult (Name, Phone, UnitType, SourcePage, ConsentAgreed, Status, HandledAt, HandledMemo, VisitDate) " & _
+								"VALUES (?, ?, ?, N'전화상담', 1, N'완료', GETDATE(), ?, ?)"
 						Else
-							.CommandText = "INSERT INTO dbo.QuickConsult (Name, Phone, UnitType, SourcePage, ConsentAgreed, HandledMemo) " & _
-								"VALUES (?, ?, ?, N'전화상담', 1, ?)"
+							.CommandText = "INSERT INTO dbo.QuickConsult (Name, Phone, UnitType, SourcePage, ConsentAgreed, HandledMemo, VisitDate) " & _
+								"VALUES (?, ?, ?, N'전화상담', 1, ?, ?)"
 						End If
 						.Parameters.Append .CreateParameter("p_name", 200, 1, 50, apName)
 						.Parameters.Append .CreateParameter("p_phone", 200, 1, 20, apPhone)
 						.Parameters.Append .CreateParameter("p_unit", 200, 1, 30, apUnit)
 						.Parameters.Append .CreateParameter("p_memo", 200, 1, 300, apMemo)
+						.Parameters.Append .CreateParameter("p_visitdate", 7, 1, , apVisitDateValue)
 					End With
 					cmdAdd.Execute , , adCmdText + adExecuteNoRecords
 					Set cmdAdd = Nothing
@@ -244,7 +252,7 @@
 
 			/* ---- 한 줄 표기 목록 (CSS Grid) ---- */
 			.qc-table-wrap { border: 1px solid #e4e7ec; border-radius: 12px; background: #fff; overflow-x: auto; }
-			.qc-table { display: grid; grid-template-columns: 150px 66px 118px 92px minmax(90px,1fr) 60px auto; min-width: 820px; }
+			.qc-table { display: grid; grid-template-columns: 150px 66px 118px 128px minmax(90px,1fr) 60px auto; min-width: 850px; }
 			.qc-row { display: contents; }
 			.qc-thead, .qc-row-cell { padding: 10px 12px; display: flex; align-items: center; border-bottom: 1px solid #eef0f3; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 			.qc-thead { background: #f6f7f9; font-size: 11px; font-weight: 800; color: #8a92a3; }
@@ -283,6 +291,7 @@
 			.qc-modal-field select { min-width: 0; height: 40px !important; padding-top: 0 !important; padding-bottom: 0 !important; }
 			.qc-modal-check { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #5b6472; margin-top: 4px; }
 			.qc-modal-actions { margin-top: 14px; display: flex; justify-content: flex-end; gap: 8px; }
+			.qc-modal-inquiry { background: #f6f7f9; border-radius: 8px; padding: 10px 12px; font-size: 12.5px; color: #3a4152; white-space: pre-line; margin-bottom: 12px; line-height: 1.6; }
 
 			/* ---- 모바일 화면 대응 ---- */
 			@media (max-width: 640px) {
@@ -325,14 +334,14 @@
 					<div class="qc-thead">신청일시</div>
 					<div class="qc-thead">이름</div>
 					<div class="qc-thead">연락처</div>
-					<div class="qc-thead">관심평형</div>
+					<div class="qc-thead">문의사항</div>
 					<div class="qc-thead">유입경로</div>
 					<div class="qc-thead">상태</div>
 					<div class="qc-thead">처리</div>
 					<%
 						Set rsList = Server.CreateObject("ADODB.Recordset")
-						rsList.Open "SELECT Id, RequestedAt, Name, Phone, UnitType, SourcePage, Status, HandledMemo FROM (" & _
-							"SELECT ROW_NUMBER() OVER (ORDER BY RequestedAt DESC) AS RowNum, Id, RequestedAt, Name, Phone, UnitType, SourcePage, Status, HandledMemo " & _
+						rsList.Open "SELECT Id, RequestedAt, Name, Phone, UnitType, SourcePage, Status, HandledMemo, VisitDate, Message FROM (" & _
+							"SELECT ROW_NUMBER() OVER (ORDER BY RequestedAt DESC) AS RowNum, Id, RequestedAt, Name, Phone, UnitType, SourcePage, Status, HandledMemo, VisitDate, Message " & _
 							"FROM dbo.QuickConsult) AS T WHERE RowNum BETWEEN " & startRow & " AND " & endRow & " ORDER BY RowNum", db, 0, 1
 
 						If rsList.bof Or rsList.eof Then
@@ -342,6 +351,7 @@
 						Else
 							Do While Not rsList.eof
 								Dim rowId, rowMemo, rowIsDone, rowNameEnc, rowPhoneEnc
+								Dim rowVisitDateStr, rowMessage, rowInquiryDisplay
 								rowId = rsList("Id")
 								rowIsDone = (rsList("Status") = "완료")
 								rowNameEnc = Server.HTMLEncode(rsList("Name"))
@@ -351,12 +361,30 @@
 								Else
 									rowMemo = rsList("HandledMemo")
 								End If
+								If IsNull(rsList("VisitDate")) Then
+									rowVisitDateStr = ""
+								Else
+									rowVisitDateStr = Year(rsList("VisitDate")) & "-" & Right("0" & Month(rsList("VisitDate")), 2) & "-" & Right("0" & Day(rsList("VisitDate")), 2)
+								End If
+								If IsNull(rsList("Message")) Then
+									rowMessage = ""
+								Else
+									rowMessage = rsList("Message")
+								End If
+								rowInquiryDisplay = rsList("UnitType") & ""
+								If rowInquiryDisplay = "방문예약" And rowVisitDateStr <> "" Then
+									rowInquiryDisplay = rowInquiryDisplay & " · " & Month(rsList("VisitDate")) & "/" & Day(rsList("VisitDate"))
+								End If
 					%>
 					<div class="qc-row" data-key="<%=LCase(rowNameEnc)%> <%=LCase(rowPhoneEnc)%>">
 						<div class="qc-row-cell qc-r-date"><%=FormatCompactDate(rsList("RequestedAt"))%></div>
 						<div class="qc-row-cell qc-r-name"><%=rowNameEnc%></div>
 						<div class="qc-row-cell qc-r-phone"><%=rowPhoneEnc%></div>
-						<div class="qc-row-cell"><% If rsList("UnitType") <> "" Then %><span class="qc-chip"><%=Server.HTMLEncode(rsList("UnitType"))%></span><% End If %></div>
+						<div class="qc-row-cell">
+							<% If rowInquiryDisplay <> "" Then %>
+							<span class="qc-chip"><%=Server.HTMLEncode(rowInquiryDisplay)%></span><% If rowMessage <> "" Then %><span class="qc-memo-flag" title="문의 내용 있음">●</span><% End If %>
+							<% End If %>
+						</div>
 						<div class="qc-row-cell"><span class="qc-source" title="<%=Server.HTMLEncode(rsList("SourcePage"))%>"><%=Server.HTMLEncode(ShortSource(rsList("SourcePage")))%></span></div>
 						<div class="qc-row-cell">
 							<% If rowIsDone Then %>
@@ -367,9 +395,9 @@
 						</div>
 						<div class="qc-row-cell qc-r-actions">
 							<% If Not rowIsDone Then %>
-							<a class="qc-btn qc-btn-primary" href="javascript:void(0)" data-id="<%=rowId%>" data-memo="" data-done="1" onclick="openMemoModal(this)">상담처리</a>
+							<a class="qc-btn qc-btn-primary" href="javascript:void(0)" data-id="<%=rowId%>" data-memo="" data-done="1" data-inquiry="<%=Server.HTMLEncode(rsList("UnitType"))%>" data-visitdate="<%=rowVisitDateStr%>" data-message="<%=Server.HTMLEncode(rowMessage)%>" onclick="openMemoModal(this)">상담처리</a>
 							<% Else %>
-							<a class="qc-btn qc-btn-ghost" href="javascript:void(0)" data-id="<%=rowId%>" data-memo="<%=Server.HTMLEncode(rowMemo)%>" data-done="0" onclick="openMemoModal(this)">상담내용보기<% If rowMemo <> "" Then %><span class="qc-memo-flag">●</span><% End If %></a>
+							<a class="qc-btn qc-btn-ghost" href="javascript:void(0)" data-id="<%=rowId%>" data-memo="<%=Server.HTMLEncode(rowMemo)%>" data-done="0" data-inquiry="<%=Server.HTMLEncode(rsList("UnitType"))%>" data-visitdate="<%=rowVisitDateStr%>" data-message="<%=Server.HTMLEncode(rowMessage)%>" onclick="openMemoModal(this)">상담내용보기<% If rowMemo <> "" Then %><span class="qc-memo-flag">●</span><% End If %></a>
 							<a class="qc-btn qc-btn-danger" href="consult_list.asp?ji_num=10&page=<%=pageNum%>&del=<%=rowId%>" onclick="return confirm('완료된 신청 건을 삭제하시겠습니까? 삭제 후 복구할 수 없습니다.');">삭제</a>
 							<% End If %>
 						</div>
@@ -400,6 +428,7 @@
 			<div class="qc-modal">
 				<h3 id="qcModalTitle">상담처리</h3>
 				<p class="qc-modal-sub" id="qcModalSub">상담 진행 내용을 남겨두시면 다음에 보기 편합니다.</p>
+				<div class="qc-modal-inquiry" id="qcModalInquiry" style="display:none;"></div>
 				<form method="post" action="consult_list.asp?ji_num=10&page=<%=pageNum%>">
 					<input type="hidden" name="memoId" id="qcModalId" value="">
 					<input type="hidden" name="markDone" id="qcModalMarkDone" value="0">
@@ -428,12 +457,16 @@
 						<input type="tel" name="apPhone" id="apPhone" maxlength="20" placeholder="010-0000-0000" required>
 					</div>
 					<div class="qc-modal-field">
-						<label for="apUnit">관심 평형 (선택)</label>
+						<label for="apUnit">문의사항</label>
 						<select name="apUnit" id="apUnit">
-							<option value="">선택 안 함</option>
-							<option value="전용 84㎡">전용 84㎡</option>
-							<option value="85㎡초과">85㎡초과</option>
+							<option value="상담요청">상담요청</option>
+							<option value="방문예약">방문예약</option>
+							<option value="기타문의">기타문의</option>
 						</select>
+					</div>
+					<div class="qc-modal-field" id="apVisitDateField" style="display:none;">
+						<label for="apVisitDate">방문 희망일</label>
+						<input type="date" name="apVisitDate" id="apVisitDate">
 					</div>
 					<div class="qc-modal-field">
 						<label for="apMemo">상담메모 (선택)</label>
@@ -466,6 +499,10 @@
 			var id = el.getAttribute('data-id');
 			var memo = el.getAttribute('data-memo');
 			var markDone = el.getAttribute('data-done') === '1';
+			var inquiry = el.getAttribute('data-inquiry') || '';
+			var visitDate = el.getAttribute('data-visitdate') || '';
+			var message = el.getAttribute('data-message') || '';
+
 			document.getElementById('qcModalId').value = id;
 			document.getElementById('qcModalText').value = memo;
 			document.getElementById('qcModalMarkDone').value = markDone ? '1' : '0';
@@ -473,6 +510,19 @@
 			document.getElementById('qcModalSub').textContent = markDone
 				? '완료 처리되며, 입력한 내용은 상담메모로 저장됩니다.'
 				: '저장된 상담메모를 확인하고 수정할 수 있습니다.';
+
+			var inquiryBox = document.getElementById('qcModalInquiry');
+			var lines = [];
+			if (inquiry) lines.push('문의유형: ' + inquiry);
+			if (visitDate) lines.push('방문 희망일: ' + visitDate);
+			if (message) lines.push('문의 내용: ' + message);
+			if (lines.length) {
+				inquiryBox.textContent = lines.join('\n');
+				inquiryBox.style.display = '';
+			} else {
+				inquiryBox.style.display = 'none';
+			}
+
 			document.getElementById('qcModalOverlay').classList.add('show');
 			document.getElementById('qcModalText').focus();
 		}
@@ -486,6 +536,9 @@
 		function closeAddPhoneModal() {
 			document.getElementById('qcAddPhoneOverlay').classList.remove('show');
 		}
+		document.getElementById('apUnit').addEventListener('change', function () {
+			document.getElementById('apVisitDateField').style.display = (this.value === '방문예약') ? '' : 'none';
+		});
 		document.addEventListener('keydown', function (e) {
 			if (e.key === 'Escape') { closeMemoModal(); closeAddPhoneModal(); }
 		});

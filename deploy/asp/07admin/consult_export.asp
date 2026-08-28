@@ -58,7 +58,7 @@
 	If qFrom <> "" Then whereSql = whereSql & " AND RequestedAt >= '" & qFrom & "'"
 	If qTo   <> "" Then whereSql = whereSql & " AND RequestedAt < DATEADD(day, 1, '" & qTo & "')"
 
-	sql = "SELECT RequestedAt, Name, Phone, UnitType, Message, SourcePage, Status, HandledMemo FROM dbo.QuickConsult"
+	sql = "SELECT RequestedAt, Name, Phone, UnitType, VisitDate, Message, SourcePage, Status, HandledMemo FROM dbo.QuickConsult"
 	If whereSql <> "" Then sql = sql & " WHERE " & Mid(whereSql, 6) ' 맨 앞의 " AND " 제거
 	sql = sql & " ORDER BY RequestedAt DESC"
 
@@ -78,8 +78,17 @@
 		CsvEsc = """" & v & """"
 	End Function
 
+	' VisitDate는 방문예약 선택 건에만 값이 있고 그 외에는 NULL이라, CSV에는 빈 칸으로 나감
+	Function CsvDate(v)
+		If IsNull(v) Then
+			CsvDate = ""
+		Else
+			CsvDate = Year(v) & "-" & Right("0" & Month(v), 2) & "-" & Right("0" & Day(v), 2)
+		End If
+	End Function
+
 	Dim csvText
-	csvText = "신청일시,이름,연락처,관심평형,문의내용,유입페이지,상태,상담메모" & vbCrLf
+	csvText = "신청일시,이름,연락처,문의사항,방문희망일,문의내용,유입페이지,상태,상담메모" & vbCrLf
 
 	Set rsExp = Server.CreateObject("ADODB.Recordset")
 	rsExp.Open sql, db, 0, 1
@@ -87,7 +96,7 @@
 	Do While Not rsExp.eof
 		csvText = csvText & CsvEsc(rsExp("RequestedAt")) & "," & CsvEsc(rsExp("Name")) & "," &_
 			CsvEsc(rsExp("Phone")) & "," & CsvEsc(rsExp("UnitType")) & "," &_
-			CsvEsc(rsExp("Message")) & "," & CsvEsc(rsExp("SourcePage")) & "," &_
+			CsvEsc(CsvDate(rsExp("VisitDate"))) & "," & CsvEsc(rsExp("Message")) & "," & CsvEsc(rsExp("SourcePage")) & "," &_
 			CsvEsc(rsExp("Status")) & "," & CsvEsc(rsExp("HandledMemo")) & vbCrLf
 		rsExp.movenext
 	Loop

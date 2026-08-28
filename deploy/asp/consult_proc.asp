@@ -58,13 +58,14 @@ Sub WriteUTF8(text)
     Set stream = Nothing
 End Sub
 
-Dim reqName, reqPhone, reqUnit, reqMessage, reqConsent, reqSrc
-reqName    = Trim(Request.Form("name"))
-reqPhone   = Trim(Request.Form("phone"))
-reqUnit    = Trim(Request.Form("unit"))
-reqMessage = Trim(Request.Form("message"))
-reqConsent = Trim(Request.Form("consent"))
-reqSrc     = Trim(Request.Form("src"))
+Dim reqName, reqPhone, reqUnit, reqMessage, reqConsent, reqSrc, reqVisitDate
+reqName      = Trim(Request.Form("name"))
+reqPhone     = Trim(Request.Form("phone"))
+reqUnit      = Trim(Request.Form("unit"))
+reqMessage   = Trim(Request.Form("message"))
+reqConsent   = Trim(Request.Form("consent"))
+reqSrc       = Trim(Request.Form("src"))
+reqVisitDate = Trim(Request.Form("visitDate"))
 
 ' 서버단 필수값 검증 (프론트 검증만 믿지 않음)
 If reqName = "" Or reqPhone = "" Or reqConsent <> "1" Then
@@ -81,6 +82,13 @@ If Len(reqPhone) > 20 Then reqPhone = Left(reqPhone, 20)
 If Len(reqUnit) > 30 Then reqUnit = Left(reqUnit, 30)
 If Len(reqMessage) > 500 Then reqMessage = Left(reqMessage, 500)
 If Len(reqSrc) > 30 Then reqSrc = Left(reqSrc, 30)
+
+' 방문예약 희망일 — 형식이 올바른 날짜일 때만 저장하고, 아니면 그냥 비워둠(잘못된 값으로 저장 실패하지 않도록)
+Dim visitDateValue
+visitDateValue = Null
+If reqVisitDate <> "" And IsDate(reqVisitDate) Then
+    visitDateValue = CDate(reqVisitDate)
+End If
 
 ' 유입경로: 인쇄물/QR로 들어온 경우 팝업 URL의 ?src= 값(예: flyer, banner)을 그대로 저장하고,
 ' 없으면(홈페이지에서 자동으로 뜬 팝업) 이전 방식대로 이전 페이지 주소(Referer)를 저장합니다.
@@ -106,14 +114,15 @@ End If
 Set cmd = Server.CreateObject("ADODB.Command")
 cmd.ActiveConnection = conn
 ' 매개변수화 쿼리 사용 — SQL 인젝션 방지를 위해 문자열 연결(& 접합) 절대 금지
-cmd.CommandText = "INSERT INTO dbo.QuickConsult (Name, Phone, UnitType, Message, SourcePage, ConsentAgreed) " & _
-                   "VALUES (?, ?, ?, ?, ?, 1)"
+cmd.CommandText = "INSERT INTO dbo.QuickConsult (Name, Phone, UnitType, Message, SourcePage, ConsentAgreed, VisitDate) " & _
+                   "VALUES (?, ?, ?, ?, ?, 1, ?)"
 
-cmd.Parameters.Append cmd.CreateParameter("p_name",    200, 1, 50,  reqName)
-cmd.Parameters.Append cmd.CreateParameter("p_phone",   200, 1, 20,  reqPhone)
-cmd.Parameters.Append cmd.CreateParameter("p_unit",    200, 1, 30,  reqUnit)
-cmd.Parameters.Append cmd.CreateParameter("p_message", 200, 1, 500, reqMessage)
-cmd.Parameters.Append cmd.CreateParameter("p_source",  200, 1, 200, sourceInfo)
+cmd.Parameters.Append cmd.CreateParameter("p_name",      200, 1, 50,  reqName)
+cmd.Parameters.Append cmd.CreateParameter("p_phone",     200, 1, 20,  reqPhone)
+cmd.Parameters.Append cmd.CreateParameter("p_unit",      200, 1, 30,  reqUnit)
+cmd.Parameters.Append cmd.CreateParameter("p_message",   200, 1, 500, reqMessage)
+cmd.Parameters.Append cmd.CreateParameter("p_source",    200, 1, 200, sourceInfo)
+cmd.Parameters.Append cmd.CreateParameter("p_visitdate", 7,   1, ,    visitDateValue)
 
 cmd.Execute
 

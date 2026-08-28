@@ -143,12 +143,20 @@
             <input id="qpPhone" type="tel" placeholder="010-0000-0000" autocomplete="tel">
           </div>
           <div class="qp-field">
-            <label for="qpUnit">관심 평형 (선택)</label>
+            <label for="qpUnit">문의사항</label>
             <select id="qpUnit">
-              <option value="">선택 안 함</option>
-              <option value="84㎡">전용 84㎡</option>
-              <option value="85㎡초과">전용 85㎡초과</option>
+              <option value="상담요청">상담요청</option>
+              <option value="방문예약">방문예약</option>
+              <option value="기타문의">기타문의</option>
             </select>
+          </div>
+          <div class="qp-field" id="qpVisitDateField" style="display:none;">
+            <label for="qpVisitDate">방문 희망일 (선택)</label>
+            <input id="qpVisitDate" type="date">
+          </div>
+          <div class="qp-field" id="qpMemoField" style="display:none;">
+            <label for="qpMemo">문의 내용 (선택)</label>
+            <textarea id="qpMemo" rows="3" placeholder="궁금하신 내용을 간단히 남겨주세요" style="width:100%; padding:11px 12px; border-radius:10px; border:1px solid #d8dbe4; background:#f6f6f6; color:#17233d; font-size:14px; font-family:inherit; resize:vertical;"></textarea>
           </div>
           <label class="qp-consent">
             <input type="checkbox" id="qpConsent">
@@ -186,11 +194,24 @@
   var nameInput = document.getElementById('qpName');
   var phoneInput = document.getElementById('qpPhone');
   var unitSelect = document.getElementById('qpUnit');
+  var visitDateField = document.getElementById('qpVisitDateField');
+  var visitDateInput = document.getElementById('qpVisitDate');
+  var memoField = document.getElementById('qpMemoField');
+  var memoInput = document.getElementById('qpMemo');
   var consent = document.getElementById('qpConsent');
   var submitBtn = document.getElementById('qpSubmit');
   var formBody = document.getElementById('qpFormBody');
   var success = document.getElementById('qpSuccess');
   var hideToday = document.getElementById('qpHideToday');
+
+  function updateInquiryFields() {
+    var v = unitSelect.value;
+    visitDateField.style.display = (v === '방문예약') ? '' : 'none';
+    memoField.style.display = (v === '기타문의') ? '' : 'none';
+    validate();
+  }
+  unitSelect.addEventListener('change', updateInquiryFields);
+  updateInquiryFields();
 
   function notifyClose(hide) {
     if (window.self !== window.top) {
@@ -211,9 +232,10 @@
   });
 
   function validate() {
-    submitBtn.disabled = !(nameInput.value.trim() && phoneInput.value.trim() && consent.checked);
+    var ok = nameInput.value.trim() && phoneInput.value.trim() && consent.checked;
+    submitBtn.disabled = !ok;
   }
-  [nameInput, phoneInput, consent].forEach(function (el) { el.addEventListener('input', validate); });
+  [nameInput, phoneInput, consent, visitDateInput].forEach(function (el) { el.addEventListener('input', validate); });
 
   function getSrcParam() {
     var m = window.location.search.match(/[?&]src=([^&]+)/);
@@ -226,7 +248,8 @@
       name: nameInput.value.trim(),
       phone: phoneInput.value.trim(),
       unit: unitSelect.value,
-      message: '',
+      message: (unitSelect.value === '기타문의') ? memoInput.value.trim() : '',
+      visitDate: (unitSelect.value === '방문예약') ? visitDateInput.value : '',
       consent: consent.checked ? '1' : '0',
       src: getSrcParam()
     });
