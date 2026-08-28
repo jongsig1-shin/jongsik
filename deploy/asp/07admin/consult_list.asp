@@ -252,12 +252,13 @@
 
 			/* ---- 한 줄 표기 목록 (CSS Grid) ---- */
 			.qc-table-wrap { border: 1px solid #e4e7ec; border-radius: 12px; background: #fff; overflow-x: auto; }
-			.qc-table { display: grid; grid-template-columns: 150px 108px 118px 128px 104px 60px auto; min-width: 840px; }
+			.qc-table { display: grid; grid-template-columns: 44px 150px 108px 118px 128px 104px 60px auto; min-width: 880px; }
 			.qc-row { display: contents; }
 			.qc-thead, .qc-row-cell { padding: 10px 12px; display: flex; align-items: center; border-bottom: 1px solid #eef0f3; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 			.qc-thead { background: #f6f7f9; font-size: 11px; font-weight: 800; color: #8a92a3; }
 			.qc-row-cell { color: #1f2430; }
 
+			.qc-r-num { color: #b3b9c4; font-size: 11.5px; font-variant-numeric: tabular-nums; }
 			.qc-r-name { font-weight: 900; color: #17233d; overflow: hidden; text-overflow: ellipsis; }
 			.qc-r-date { color: #8a92a3; font-size: 11.5px; }
 			.qc-r-phone { font-variant-numeric: tabular-nums; }
@@ -331,6 +332,7 @@
 
 			<div class="qc-table-wrap">
 				<div class="qc-table" id="qcTable">
+					<div class="qc-thead">No.</div>
 					<div class="qc-thead">신청일시</div>
 					<div class="qc-thead">이름</div>
 					<div class="qc-thead">연락처</div>
@@ -340,7 +342,7 @@
 					<div class="qc-thead">처리</div>
 					<%
 						Set rsList = Server.CreateObject("ADODB.Recordset")
-						rsList.Open "SELECT Id, RequestedAt, Name, Phone, UnitType, SourcePage, Status, HandledMemo, VisitDate, Message FROM (" & _
+						rsList.Open "SELECT RowNum, Id, RequestedAt, Name, Phone, UnitType, SourcePage, Status, HandledMemo, VisitDate, Message FROM (" & _
 							"SELECT ROW_NUMBER() OVER (ORDER BY RequestedAt DESC) AS RowNum, Id, RequestedAt, Name, Phone, UnitType, SourcePage, Status, HandledMemo, VisitDate, Message " & _
 							"FROM dbo.QuickConsult) AS T WHERE RowNum BETWEEN " & startRow & " AND " & endRow & " ORDER BY RowNum", db, 0, 1
 
@@ -377,6 +379,7 @@
 								End If
 					%>
 					<div class="qc-row" data-key="<%=LCase(rowNameEnc)%> <%=LCase(rowPhoneEnc)%>">
+						<div class="qc-row-cell qc-r-num"><%=rsList("RowNum")%></div>
 						<div class="qc-row-cell qc-r-date"><%=FormatCompactDate(rsList("RequestedAt"))%></div>
 						<div class="qc-row-cell qc-r-name"><%=rowNameEnc%></div>
 						<div class="qc-row-cell qc-r-phone"><%=rowPhoneEnc%></div>
