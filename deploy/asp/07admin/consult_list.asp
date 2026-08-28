@@ -183,8 +183,8 @@
 				s = raw & ""
 				If Left(s, 3) = "qr:" Then
 					ShortSource = "QR·" & Mid(s, 4)
-				ElseIf Len(s) > 18 Then
-					ShortSource = Left(s, 18) & "..."
+				ElseIf Len(s) > 10 Then
+					ShortSource = Left(s, 10) & "..."
 				Else
 					ShortSource = s
 				End If
@@ -252,7 +252,7 @@
 
 			/* ---- 한 줄 표기 목록 (CSS Grid) ---- */
 			.qc-table-wrap { border: 1px solid #e4e7ec; border-radius: 12px; background: #fff; overflow-x: auto; }
-			.qc-table { display: grid; grid-template-columns: 150px 66px 118px 128px minmax(90px,1fr) 60px auto; min-width: 850px; }
+			.qc-table { display: grid; grid-template-columns: 150px 108px 118px 128px 104px 60px auto; min-width: 840px; }
 			.qc-row { display: contents; }
 			.qc-thead, .qc-row-cell { padding: 10px 12px; display: flex; align-items: center; border-bottom: 1px solid #eef0f3; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 			.qc-thead { background: #f6f7f9; font-size: 11px; font-weight: 800; color: #8a92a3; }
