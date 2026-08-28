@@ -379,7 +379,9 @@
 								End If
 					%>
 					<div class="qc-row" data-key="<%=LCase(rowNameEnc)%> <%=LCase(rowPhoneEnc)%>">
-						<div class="qc-row-cell qc-r-num"><%=rsList("RowNum")%></div>
+						<%' 화면은 최신순으로 보여주지만 번호는 접수번호처럼 가장 오래된 건이 1번, 최신 건이 가장 큰 번호가 되도록
+						  ' RowNum(최신순 순위)을 전체 건수 기준으로 뒤집어서 표시 — 새 신청이 들어와도 기존 건 번호는 바뀌지 않음 %>
+						<div class="qc-row-cell qc-r-num"><%=totalCount - rsList("RowNum") + 1%></div>
 						<div class="qc-row-cell qc-r-date"><%=FormatCompactDate(rsList("RequestedAt"))%></div>
 						<div class="qc-row-cell qc-r-name"><%=rowNameEnc%></div>
 						<div class="qc-row-cell qc-r-phone"><%=rowPhoneEnc%></div>
