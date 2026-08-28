@@ -74,6 +74,15 @@
 
 	Function CsvEsc(v)
 		v = CStr(v & "")
+		' 엑셀 수식 삽입(CSV Injection) 방지 — 공개 신청 폼에서 받은 이름/문의내용이 =, +, -, @로
+		' 시작하면 엑셀이 이를 수식으로 해석해 실행할 수 있음. 앞에 작은따옴표를 붙여 순수 텍스트로 강제.
+		If Len(v) > 0 Then
+			Dim firstCh
+			firstCh = Left(v, 1)
+			If firstCh = "=" Or firstCh = "+" Or firstCh = "-" Or firstCh = "@" Then
+				v = "'" & v
+			End If
+		End If
 		v = Replace(v, """", """""")
 		CsvEsc = """" & v & """"
 	End Function

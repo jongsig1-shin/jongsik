@@ -64,8 +64,10 @@
 			End If
 
 			' ---- 삭제 (완료된 건만 허용 — 서버단에서도 Status=완료 조건을 같이 검사) ----
+			' POST로만 받음(예전엔 GET 링크였는데, 로그인된 관리자가 악성 페이지를 열면 의도치 않게
+			' 삭제가 실행되는 CSRF 노출이 있어서 다른 액션들과 동일하게 폼 제출 방식으로 변경)
 			Dim delId
-			delId = Request.QueryString("del")
+			delId = Request.Form("delId")
 			If delId <> "" And IsNumeric(delId) Then
 				Set cmdDel = Server.CreateObject("ADODB.Command")
 				With cmdDel
@@ -408,7 +410,10 @@
 							<a class="qc-btn qc-btn-primary" href="javascript:void(0)" data-id="<%=rowId%>" data-memo="" data-done="1" data-inquiry="<%=Server.HTMLEncode(rsList("UnitType"))%>" data-visitdate="<%=rowVisitDateStr%>" data-message="<%=Server.HTMLEncode(rowMessage)%>" onclick="openMemoModal(this)">상담처리</a>
 							<% Else %>
 							<a class="qc-btn qc-btn-ghost" href="javascript:void(0)" data-id="<%=rowId%>" data-memo="<%=Server.HTMLEncode(rowMemo)%>" data-done="0" data-inquiry="<%=Server.HTMLEncode(rsList("UnitType"))%>" data-visitdate="<%=rowVisitDateStr%>" data-message="<%=Server.HTMLEncode(rowMessage)%>" onclick="openMemoModal(this)">상담내용보기<% If rowMemo <> "" Then %><span class="qc-memo-flag">●</span><% End If %></a>
-							<a class="qc-btn qc-btn-danger" href="consult_list.asp?ji_num=10&page=<%=pageNum%>&del=<%=rowId%>" onclick="return confirm('완료된 신청 건을 삭제하시겠습니까? 삭제 후 복구할 수 없습니다.');">삭제</a>
+							<form method="post" action="consult_list.asp?ji_num=10&page=<%=pageNum%>" style="display:inline;" onsubmit="return confirm('완료된 신청 건을 삭제하시겠습니까? 삭제 후 복구할 수 없습니다.');">
+								<input type="hidden" name="delId" value="<%=rowId%>">
+								<button type="submit" class="qc-btn qc-btn-danger">삭제</button>
+							</form>
 							<% End If %>
 						</div>
 					</div>
