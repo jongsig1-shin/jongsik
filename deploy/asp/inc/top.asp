@@ -58,16 +58,24 @@
         .jss-logo-text { font-size: 23px !important; display: flex; align-items: center; gap: 8px; }
         .jss-logo-text::before, .jss-logo-text::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #b9862f; flex-shrink: 0; }
 
+        /* 공용 CSS/JS가 모바일 메뉴 등을 위해 nav/ul을 기본적으로 안 보이게 해뒀을 가능성이 있어
+           display 외에도 visibility/height/opacity까지 명시적으로 강제해서 확실히 보이게 함 */
         .jss-menurow {
+            display: block !important; visibility: visible !important; opacity: 1 !important;
+            height: auto !important; max-height: none !important; overflow: visible !important;
             border-top: 1px solid #e7e1d2;
         }
         .jss-menu {
-            list-style: none !important; display: flex !important; justify-content: center; flex-wrap: wrap;
+            list-style: none !important; display: flex !important; visibility: visible !important;
+            opacity: 1 !important; height: auto !important; max-height: none !important; overflow: visible !important;
+            justify-content: center; flex-wrap: wrap;
             gap: 4px; margin: 0 auto !important; padding: 0 32px !important; max-width: 1180px;
         }
-        .jss-menu li { list-style: none !important; margin: 0 !important; }
+        .jss-menu li { list-style: none !important; margin: 0 !important; display: list-item !important; visibility: visible !important; }
+        .jss-menu h2 { display: inline-block !important; margin: 0 !important; font-size: inherit !important; font-weight: inherit !important; visibility: visible !important; }
         .jss-menu a {
-            display: inline-block; padding: 12px 22px; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif !important;
+            display: inline-block !important; visibility: visible !important; opacity: 1 !important;
+            padding: 12px 22px; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif !important;
             font-size: 14.5px !important; font-weight: 500 !important; color: #2b3346 !important;
             text-decoration: none !important; letter-spacing: 0.01em; position: relative; transition: color .15s;
         }
@@ -118,7 +126,10 @@
         </a>
     </div>
 
-    <nav class="jss-menurow">
+    <%' 사이트 공용 CSS/JS가 <nav> 태그를 모바일 메뉴용으로 기본 숨김 처리해두고 있을 수 있어
+      ' (버튼으로 열기 전까진 안 보이는 방식) 실제로 메뉴가 사라지는 문제가 있었음 —
+      ' 원래 페이지에서 멀쩡히 보이던 것과 같은 태그(div)로 감싸서 그 규칙을 피함 %>
+    <div class="jss-menurow">
         <ul class="jss-menu">
             <li><h2><a href="../01about/about01.asp">회사소개</a></h2></li>
             <li><h2><a href="../02business/business01.asp">사업안내</a></h2></li>
@@ -127,5 +138,5 @@
             <li><h2><a href="../06ftp/list.asp?ji_num=7">자료실</a></h2></li>
             <li><h2><a href="../07admin/list.asp?ji_num=8">관리자 페이지</a></h2></li>
         </ul>
-    </nav>
+    </div>
 </header>
