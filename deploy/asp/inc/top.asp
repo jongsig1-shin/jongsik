@@ -31,6 +31,13 @@
     <style>
         /* ---- 헤더/메인메뉴 — 사이트 공용 style.css의 기존 header/nav 규칙을 덮어써야 할 수 있어
            .jss- 접두어로 스코프를 주고 시각 속성은 !important로 확실히 적용함 ---- */
+        /* 기존 헤더는 한 줄짜리라 공용 CSS가 header 태그에 고정 높이 + overflow:hidden을
+           걸어뒀을 가능성이 높음 — 로고+메뉴 2단으로 늘리면서 메뉴 부분이 그 높이를 넘어
+           통째로 잘려 안 보이는 증상과 정확히 일치해서, header 자체의 높이 제한을 강제로 풀어줌 */
+        header, .jss-header {
+            height: auto !important; min-height: 0 !important; max-height: none !important;
+            overflow: visible !important;
+        }
         .jss-header { background: #fdfbf6 !important; border-bottom: 1px solid #e7e1d2; }
 
         .jss-utilbar {
