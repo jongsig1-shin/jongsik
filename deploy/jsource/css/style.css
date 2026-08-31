@@ -1,0 +1,74 @@
+@charset "utf-8";
+@import "common.css";
+@import "layoutCenter4.css";
+
+/* common */
+a:hover {color:#0470B0;}
+.topLogo {float:left; width:185px; height:41px; background:url("../../web/images/sinsung_ci.png") no-repeat; text-indent:-9999em;}
+
+/* buttons */
+button {border:1px solid;}
+button.big, input[type=submit], input[type=button] {padding:.3em 1.5em .3em; font-size:1.167em; color:#FFF; border-radius:.2em;}
+button.mid, input.mid {padding:.3em 1em .3em; font-size:0.917em; color:#FFF; border-radius:.2em;}
+button.sml, input.sml {padding:.3em 1em .3em; font-size:0.583em; color:#FFF; border-radius:.2em;}
+button.red, input.red {background-color:#FF5A3A; border-color:#FF5A3A;}
+button.gry, input.gry {background-color:#777777; border-color:#666666;}
+button.org, input.org {background-color:#FC9E01; border-color:#FC9E01;}
+button.blu, input.blu {background-color:#248ACE; border-color:#248ACE;}
+button.blk, input.blk {background-color:#2E2E2E; border-color:#000;}
+button:disabled, input[type=submit]:disabled, input[type=button]:disabled {opacity: 0.5;}
+button.chage:not(:disabled), input[type=submit].chage:not(:disabled), input[type=button].chage:not(:disabled) {background-color:#FC9E01; border-color:#FC9E01;}
+
+/* 메인페이지 */
+#mainImg {color:#FFF; font-size:1.333em; background-color:#4B79AD;}
+#mainImg p {padding:2.5em 10em;}
+#mainArea {background-color:#F1F0EE; text-align:center;}
+#mainArea main {padding:2em 0;}
+#mainArea main > ol > li {display:inline-block; height:155px; vertical-align:top; text-align:left; background-color:#FFF; padding:2em; margin:.4em;}
+#mainArea main > ol > li:first-of-type {max-width:350px; width:350px;}
+#mainArea main > ol > li:last-of-type {width:718px;}
+#mainArea main > ol > li h3 {font-size:1.250em; padding-bottom:.5em; border-bottom:1px solid;}
+
+/* 메인페이지 게시물 추출 */
+.noticeWrap .list li {margin:.45em .3em;}
+.noticeWrap h4 {font-size:1.250em;}
+.noticeWrap ul {margin-top:30px;}
+.noticeWrap .more {margin-top:7px; font-size:1.000em;}
+
+/* 서브메뉴 */
+main nav h2 {border-color:#4388BF; background-color:#4388BF;}
+main nav ul li {background-color:#F8F8F8;}
+main nav ul li:hover, main nav ul li a.nowPage:hover {border-color:#AAD1EC; background-color:#AAD1EC;}
+main nav ul li a.nowPage {background-color:#FFF;}
+
+/* 서브페이지 */
+main > section > article {min-height:155px;}
+
+/*2026-01-28 cnrk */
+
+/* ===============================
+   메인 슬라이드(#mainSlide, .slide, .mainSlideWrap 등)용 CSS는
+   main.asp가 modern-slide-container(#modernSlide)로 바뀌면서 더 이상 안 씀 —
+   .slide / .slide img 클래스명이 새 슬라이드와 겹쳐서 충돌 여지가 있어 완전히 제거함.
+   (2026-08-31 정리)
+=============================== */
+
+/* ===============================
+   모바일 반응형 (공지/갤러리)
+=============================== */
+@media screen and (max-width: 768px) {
+
+    #mainArea main > ol {
+        padding: 0 12px;
+    }
+
+    #mainArea main > ol > li {
+        display: block;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto;
+        margin: 10px 0;
+        padding: 1.2em;
+    }
+
+}
