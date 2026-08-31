@@ -93,14 +93,47 @@
         .jss-menu a:hover { color: #17233d !important; }
         .jss-menu a:hover::after { transform: scaleX(1); }
 
-        @media (max-width: 860px) {
+        /* ---- 햄버거 버튼: PC에서는 완전히 숨기고, 모바일 폭에서만 나타남 ---- */
+        .jss-burger {
+            display: none; align-items: center; justify-content: center;
+            position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+            width: 36px; height: 36px; border: 1px solid #d9c9a0; border-radius: 8px;
+            background: #fff; cursor: pointer; padding: 0;
+        }
+        .jss-burger svg { width: 19px; height: 19px; color: #17233d; }
+        .jss-burger .jss-icon-close { display: none; }
+        .jss-burger.jss-open .jss-icon-menu { display: none; }
+        .jss-burger.jss-open .jss-icon-close { display: block; }
+
+        @media (max-width: 760px) {
             .jss-utilbar { padding: 6px 16px; }
             .jss-utilbar a { font-size: 11px !important; padding: 0 8px; }
-            .jss-logorow { padding: 18px 16px 12px; }
-            .jss-logo-img { height: 38px; }
-            .jss-logo-text { font-size: 19px !important; }
-            .jss-menu { padding: 0 8px !important; gap: 0; }
-            .jss-menu a { padding: 10px 12px; font-size: 13px !important; }
+
+            .jss-logorow { position: relative; padding: 16px 56px 14px; }
+            .jss-logo-img { height: 34px; }
+            .jss-logo-text { font-size: 17px !important; }
+            .jss-burger { display: flex; }
+
+            /* 접힌/펼친 상태를 max-height로 전환 — display:none을 쓰면 이번에 겪은 것과
+               비슷하게 "안 보이는" 상태로 고정될 위험이 있어, 전환 애니메이션이 되는
+               max-height 방식으로 처리하고 펼쳐졌을 때만 보더를 그림 */
+            .jss-menurow {
+                max-height: 0 !important; overflow: hidden !important; border-top: 0 !important;
+                transition: max-height .25s ease;
+            }
+            .jss-menurow.jss-open {
+                max-height: 400px !important; overflow: visible !important; border-top: 1px solid #e7e1d2 !important;
+            }
+            .jss-menu {
+                flex-direction: column !important; align-items: stretch !important;
+                gap: 0 !important; padding: 4px 20px 12px !important;
+            }
+            .jss-menu a {
+                display: block !important; text-align: center; padding: 13px 10px;
+                border-bottom: 1px solid #f1ece0;
+            }
+            .jss-menu a::after { display: none; }
+            .jss-menu li:last-child a { border-bottom: 0; }
         }
     </style>
 </head>
@@ -131,12 +164,17 @@
             <img src="/images/sinsung_ci.png" alt="<%=site_name%>" class="jss-logo-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
             <span class="jss-logo-text" style="display:none;"><%=site_name%></span>
         </a>
+
+        <button type="button" class="jss-burger" id="jssBurger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="jssMenuRow">
+            <svg class="jss-icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
+            <svg class="jss-icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"></line><line x1="19" y1="5" x2="5" y2="19"></line></svg>
+        </button>
     </div>
 
     <%' 사이트 공용 CSS/JS가 <nav> 태그를 모바일 메뉴용으로 기본 숨김 처리해두고 있을 수 있어
       ' (버튼으로 열기 전까진 안 보이는 방식) 실제로 메뉴가 사라지는 문제가 있었음 —
       ' 원래 페이지에서 멀쩡히 보이던 것과 같은 태그(div)로 감싸서 그 규칙을 피함 %>
-    <div class="jss-menurow">
+    <div class="jss-menurow" id="jssMenuRow">
         <ul class="jss-menu">
             <li><h2><a href="../01about/about01.asp">회사소개</a></h2></li>
             <li><h2><a href="../02business/business01.asp">사업안내</a></h2></li>
@@ -147,3 +185,32 @@
         </ul>
     </div>
 </header>
+
+<script>
+(function () {
+    var burger = document.getElementById('jssBurger');
+    var menuRow = document.getElementById('jssMenuRow');
+    if (!burger || !menuRow) return;
+
+    function setOpen(open) {
+        burger.classList.toggle('jss-open', open);
+        menuRow.classList.toggle('jss-open', open);
+        burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+        burger.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+    }
+
+    burger.addEventListener('click', function () {
+        setOpen(!menuRow.classList.contains('jss-open'));
+    });
+
+    /* 메뉴 링크를 누르면 자동으로 닫힘 (같은 페이지 내 앵커 등으로 남아있는 것 방지) */
+    menuRow.addEventListener('click', function (e) {
+        if (e.target.tagName === 'A') setOpen(false);
+    });
+
+    /* PC 폭으로 창을 넓히면 모바일 전용 열림 상태가 어색하게 남지 않도록 정리 */
+    window.addEventListener('resize', function () {
+        if (window.innerWidth > 760) setOpen(false);
+    });
+})();
+</script>
