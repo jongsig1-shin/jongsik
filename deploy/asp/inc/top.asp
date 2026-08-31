@@ -42,27 +42,38 @@
         .jss-utilbar a:hover { color: #f4e6c8 !important; }
         .jss-utilbar .jss-div { color: #445070; font-size: 11px; }
 
-        .jss-mainrow {
-            display: flex !important; align-items: center; justify-content: space-between;
-            max-width: 1180px; margin: 0 auto; padding: 18px 32px; flex-wrap: wrap; gap: 12px;
+        /* 로고를 위에, 메뉴를 아래에 각각 중앙 정렬하는 2단 구조 —
+           로고/메뉴를 좌우 끝으로 벌리는 방식(space-between)은 화면이 넓을수록
+           양쪽이 따로 떨어져 노는 느낌이 들어서, 중앙 정렬로 바꿔 안정적인 균형을 줌 */
+        .jss-logorow {
+            display: flex !important; justify-content: center; align-items: center;
+            max-width: 1180px; margin: 0 auto !important; padding: 22px 32px 16px;
         }
         .jss-logo {
-            font-family: "Noto Serif KR", serif !important; font-size: 22px !important; font-weight: 700 !important;
+            font-family: "Noto Serif KR", serif !important; font-weight: 700 !important;
             color: #17233d !important; text-decoration: none !important; letter-spacing: -0.01em;
-            display: flex; align-items: center; gap: 8px;
+            display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center;
         }
-        .jss-logo::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #b9862f; flex-shrink: 0; }
+        .jss-logo-img { height: 46px; width: auto; display: block; }
+        .jss-logo-text { font-size: 23px !important; display: flex; align-items: center; gap: 8px; }
+        .jss-logo-text::before, .jss-logo-text::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #b9862f; flex-shrink: 0; }
 
-        .jss-menu { list-style: none !important; display: flex !important; flex-wrap: wrap; gap: 2px; margin: 0 !important; padding: 0 !important; }
+        .jss-menurow {
+            border-top: 1px solid #e7e1d2;
+        }
+        .jss-menu {
+            list-style: none !important; display: flex !important; justify-content: center; flex-wrap: wrap;
+            gap: 4px; margin: 0 auto !important; padding: 0 32px !important; max-width: 1180px;
+        }
         .jss-menu li { list-style: none !important; margin: 0 !important; }
         .jss-menu a {
-            display: inline-block; padding: 8px 18px; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif !important;
+            display: inline-block; padding: 12px 22px; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif !important;
             font-size: 14.5px !important; font-weight: 500 !important; color: #2b3346 !important;
             text-decoration: none !important; letter-spacing: 0.01em; position: relative; transition: color .15s;
         }
         .jss-menu a::after {
-            content: ""; position: absolute; left: 18px; right: 18px; bottom: 3px; height: 2px;
-            background: #b9862f; transform: scaleX(0); transform-origin: left; transition: transform .2s ease;
+            content: ""; position: absolute; left: 22px; right: 22px; bottom: 5px; height: 2px;
+            background: #b9862f; transform: scaleX(0); transform-origin: center; transition: transform .2s ease;
         }
         .jss-menu a:hover { color: #17233d !important; }
         .jss-menu a:hover::after { transform: scaleX(1); }
@@ -70,8 +81,11 @@
         @media (max-width: 860px) {
             .jss-utilbar { padding: 6px 16px; }
             .jss-utilbar a { font-size: 11px !important; padding: 0 8px; }
-            .jss-mainrow { padding: 14px 16px; }
-            .jss-menu a { padding: 6px 12px; font-size: 13.5px !important; }
+            .jss-logorow { padding: 18px 16px 12px; }
+            .jss-logo-img { height: 38px; }
+            .jss-logo-text { font-size: 19px !important; }
+            .jss-menu { padding: 0 8px !important; gap: 0; }
+            .jss-menu a { padding: 10px 12px; font-size: 13px !important; }
         }
     </style>
 </head>
@@ -95,9 +109,14 @@
         <% End If %>
     </div>
 
-    <nav class="jss-mainrow">
-        <a href="../inc/main.asp" class="jss-logo topLogo"><%=site_name%></a>
+    <div class="jss-logorow">
+        <%' 실제 로고 이미지 파일을 받으면 여기에 <img class="jss-logo-img" src="..." alt="..."> 로 교체 예정 %>
+        <a href="../inc/main.asp" class="jss-logo topLogo">
+            <span class="jss-logo-text"><%=site_name%></span>
+        </a>
+    </div>
 
+    <nav class="jss-menurow">
         <ul class="jss-menu">
             <li><h2><a href="../01about/about01.asp">회사소개</a></h2></li>
             <li><h2><a href="../02business/business01.asp">사업안내</a></h2></li>
