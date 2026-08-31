@@ -110,9 +110,11 @@
     </div>
 
     <div class="jss-logorow">
-        <%' 실제 로고 이미지 파일을 받으면 여기에 <img class="jss-logo-img" src="..." alt="..."> 로 교체 예정 %>
+        <%' 로고 이미지(D:\Jboard\web\images\sinsung_ci.png)가 혹시 없거나 경로가 바뀌어도
+          ' 빈 화면이 되지 않도록 onerror로 텍스트 로고에 자동으로 대체됨 %>
         <a href="../inc/main.asp" class="jss-logo topLogo">
-            <span class="jss-logo-text"><%=site_name%></span>
+            <img src="/images/sinsung_ci.png" alt="<%=site_name%>" class="jss-logo-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+            <span class="jss-logo-text" style="display:none;"><%=site_name%></span>
         </a>
     </div>
 
