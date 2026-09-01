@@ -21,3 +21,20 @@
     #loginWrap form .optArea {margin-left:0; font-size:0.917em;}
     #loginWrap form #btnArea {margin-left:0;}
 }
+
+/* 2026-09-02 추가 — Jlogin.js가 페이지 로드 시 .skinWrap에 944px 같은 고정 픽셀 폭과
+   position:absolute + top:50%/left:50%(가운데 정렬용 팝업 방식)를 자바스크립트로
+   직접 인라인 스타일로 박아넣고 있어서, 위 CSS를 아무리 고쳐도 좁은 화면에서 무시되고
+   있었음(개발자도구로 확인). 인라인 스타일보다 우선순위가 높은 !important로 확실하게
+   덮어써서, 스크립트가 어떤 값을 넣든 좁은 화면에서는 항상 이기도록 함 */
+@media (max-width: 1200px) {
+    #middleContainer .skinWrap {
+        position: static !important;
+        top: auto !important;
+        left: auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+    }
+}
