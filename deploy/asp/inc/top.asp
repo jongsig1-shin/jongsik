@@ -17,7 +17,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="">
 
     <!-- ✅ CSS는 여기서 단 한 번만 -->
-    <link rel="stylesheet" href="/Jsource/css/style.css?v=20260512">
+    <link rel="stylesheet" href="/Jsource/css/style.css?v=20260901">
 
     <!-- 헤더 로고/메뉴에 쓰는 폰트 — 로고는 세리프로 무게감을, 메뉴는 산세리프로 가독성을 살림 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
