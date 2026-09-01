@@ -62,4 +62,13 @@ footer ul li p span {margin:0 .6em;}
         width: auto !important;
         margin-left: 0 !important;
     }
+    /* 회사소개/사업안내 같은 서브페이지 본문 안에 들어간 사진(고정 크기로 삽입된 것들)이
+       화면보다 넓게 그대로 나오던 문제 — 본문 폭에 맞춰 줄어들도록 함 */
+    main > section article img {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+    main > section article table {
+        max-width: 100% !important;
+    }
 }
