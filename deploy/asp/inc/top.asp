@@ -63,7 +63,6 @@
         }
         .jss-logo-img { height: 46px; width: auto; display: block; }
         .jss-logo-text { font-size: 23px !important; display: flex; align-items: center; gap: 8px; }
-        .jss-logo-text::before, .jss-logo-text::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #b9862f; flex-shrink: 0; }
 
         /* 공용 CSS/JS가 모바일 메뉴 등을 위해 nav/ul을 기본적으로 안 보이게 해뒀을 가능성이 있어
            display 외에도 visibility/height/opacity까지 명시적으로 강제해서 확실히 보이게 함 */
