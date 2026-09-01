@@ -1,0 +1,23 @@
+
+#middleContainer {position:relative; min-height:500px;}
+#loginWrap .outLine {border:1px solid #BBB; padding:5em 0;}
+#loginWrap .outLine p {margin:1em 0; height:1.8em; border-bottom:1px solid #EEE;}
+#loginWrap form {width:100%; max-width:500px; margin:0 auto; box-sizing:border-box;}
+#loginWrap form ol > li {float:left;}
+#loginWrap form ul li {display:block; margin-bottom:.4em;}
+#loginWrap form ul li label {float:left; width:60px; padding-top:.3em;}
+#loginWrap form .optArea {clear:both; margin-left:5em;}
+#loginWrap form #btnArea {margin:1em 0 0 5em; text-align:left;}
+#loginWrap form #btnArea button {height:2.3em; padding:0 .6em; background-color:#CCC; color:#FFF; border-radius:0;}
+#loginWrap form span.error {display: block;}
+#loginWrap button[type=submit] {height:4.8em; padding:0 1.3em; margin-left:.2em;}
+
+/* 모바일 대응 (2026-08-31 추가) — 폼 자체는 위에서 이미 max-width로 유동폭이 됐지만,
+   좌우 여백(margin-left:5em 등)이 좁은 화면에서는 비율상 너무 커서 같이 줄여줌 */
+@media (max-width: 560px) {
+    #loginWrap .outLine {padding:2em 12px;}
+    #loginWrap form {padding:0 12px;}
+    #loginWrap form ul li label {width:50px; font-size:0.917em;}
+    #loginWrap form .optArea {margin-left:0; font-size:0.917em;}
+    #loginWrap form #btnArea {margin-left:0;}
+}
