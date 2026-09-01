@@ -1,0 +1,13 @@
+@charset "utf-8";
+@import "style.css?v=20260902";
+
+.boardWrap #list, 
+.boardWrap #gallery, 
+.boardWrap #zine, 
+.boardWrap #write, 
+.boardWrap #content, 
+.boardWrap #paging span, 
+.boardWrap .category ul li.nowCategory {border-color:#AAA;}
+.boardWrap .category ul li.nowCategory {background-color:#AAA;}
+.boardWrap #paging span {color:#AAA;}
+.boardWrap button i {padding:0 9px; background-image:url("/Jsource/img/board/icons_gray.png");}

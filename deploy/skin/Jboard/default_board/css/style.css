@@ -1,0 +1,197 @@
+
+/* common */
+.boardWrap {line-height:1.5;}
+.boardWrap #list, .boardWrap #gallery, .boardWrap #zine, .boardWrap #write, .boardWrap #content {border-top:2px solid;}
+.boardWrap .category {text-align:right;}
+.boardWrap .category div {position:absolute; margin-top:.8em;}
+.boardWrap .category select {margin-bottom:.25em;}
+.boardWrap .category ul li {display:inline-block; margin-left:3px; vertical-align:bottom; background-color:#EDEDED; border:1px solid #DDD; border-radius:.3em .3em 0 0;}
+.boardWrap .category ul li a {display:block; padding:.6em 1.5em .3em;}
+.boardWrap .category ul li.nowCategory a {color:#FFF;}
+.boardWrap small {position:relative; bottom:.1em; padding-left:.2em; font-size:0.750em}
+.boardWrap small span {font-size:0; text-indent:-9999em;}
+.boardWrap div.nothing {padding:.85em 0; border-bottom:1px solid #E7E7E7; text-align:center;}
+
+/* list */
+.boardWrap #list ul {height:3.5em; border-bottom:1px solid #E4E4E4; background-color:#FAFAFA;}
+.boardWrap #list ul li {margin-top:1.1em; font-weight:bold;}
+.boardWrap #list ol {border-bottom:1px solid #E7E7E7;}
+.boardWrap #list ol li {padding:1em 0 .8em;}
+.boardWrap #list ol li span {padding-left:.2em;}
+.boardWrap #list ol li img {margin:-.2em .2em 0;}
+.boardWrap #list ol li.wp4 {padding-bottom:.5em;}
+.boardWrap #list ol li.title {text-align:left;}
+.boardWrap #list li {display:inline-block; margin-right:-4px; text-align:center;}
+
+/* 모바일 목록 (2026-09-02 추가) — 작성자/등록일/조회 칸이 wp10/wp7 같은 고정 %폭이라
+   좁은 화면에서는 그 안에 날짜/숫자가 한 줄로 안 줄어들고 넘쳐서 옆 칸과 겹쳐 보였음.
+   좁은 화면에서는 칸을 나란히 배치하는 대신 제목을 위, 나머지 정보를 작은 글씨로
+   아래 한 줄에 모아 쌓는 방식으로 바꿔서 겹침 자체가 생길 수 없게 함 */
+@media (max-width: 640px) {
+    .boardWrap #list ul {height:auto; padding:.7em 4%;}
+    .boardWrap #list ul li {display:none;}
+    .boardWrap #list ol {display:flex; flex-wrap:wrap; align-items:baseline; padding:.9em 4%;}
+    .boardWrap #list ol li {
+        display:inline-block; width:auto !important; margin:0 .6em 0 0;
+        padding:0; text-align:left; white-space:normal; word-break:break-all;
+    }
+    .boardWrap #list ol li.title {
+        width:100% !important; margin:0 0 .35em; text-align:left; font-weight:bold;
+    }
+    .boardWrap #list ol li.wp4 {padding-bottom:0;}
+    .boardWrap #list ol li.wp8, .boardWrap #list ol li.wp10,
+    .boardWrap #list ol li.wp7, .boardWrap #list ol li.wp5 {
+        font-size:0.833em; color:#999;
+    }
+}
+
+/* gallery */
+.boardWrap #gallery ul li {display:inline-block; margin:1.6% 1.2% 2%; vertical-align:top;}
+.boardWrap #gallery ul li > p, .boardWrap #gallery ul li > img {border:1px solid #BBB;}
+.boardWrap #gallery ul li div img {margin:0 .2em .2em;}
+.boardWrap #gallery ul li span {padding-left:.2em;}
+
+/* zine */
+.boardWrap #zine ul {padding-top:.2em;}
+.boardWrap #zine ul > li {margin:0 1em;}
+.boardWrap #zine ul > li > p, .boardWrap #zine ul > li > img {float:left; border:1px solid #BBB; margin-right:1em;}
+.boardWrap #zine ul li ol {border-bottom:1px solid #DDD; margin-bottom:1em;}
+.boardWrap #zine ul li ol li {margin:.5em 0;}
+.boardWrap #zine ul li ol li span {padding-left:.2em;}
+.boardWrap #zine ul li ol li img {margin:0 .2em .2em;}
+.boardWrap #zine ul li ol li:nth-of-type(2) {font-size:1.083em; font-weight:bold;}
+
+/* paging */
+.boardWrap #paging {text-align:center; height:3em; padding-top:1em;}
+.boardWrap #paging .btnList {float:left;}
+.boardWrap #paging .btnWrite {float:right;}
+.boardWrap #paging a, 
+.boardWrap #paging span {display:inline-block; padding:.3em .5em; vertical-align:middle; border:1px solid transparent; color:#888; font-weight:bold; text-align:center;}
+.boardWrap #paging a:hover {border:1px solid #CCC;}
+.boardWrap #paging p {font-size:0; text-indent:-9999em;}
+.boardWrap #paging span.prevNext {color:#CCC;}
+.boardWrap #paging .prevNext {min-width:1.8em; padding:.3em 0; color:#888; border:1px solid #ECECEC;}
+.boardWrap #paging .prevNext b {padding:0 .3em;}
+
+/* search */
+.boardWrap #search {text-align:center; margin-top:1em;}
+.boardWrap #control {height:1em; margin-top:1em;}
+.boardWrap #control a {margin-right:.4em;}
+.boardWrap #control span {float:right;}
+
+/* write */
+.boardWrap #write li {padding:.4em 0; border-bottom:1px solid #E7E7E7;}
+.boardWrap #write li label[for]:first-of-type {float:left; width:9em; margin:.4em 0 0 1em;}
+.boardWrap #write li .cheditor-container, 
+.boardWrap #write li div.errMsg {margin-left:10em;}
+.boardWrap #write li #fileSelect {display:inline-block; min-height:5em; padding:0 .3em; border:1px dashed #BBB; color:#AAA; border-radius:.1em; cursor:pointer;}
+.boardWrap #write li #fileSelect > div {margin-top:1em; text-align:center;}
+.boardWrap #write li output {padding:.2em .2em;}
+.boardWrap #write li output img, [id^=preview], span[id^=temp] {height:6em;}
+.boardWrap #write li output abbr {display:inline-block; margin:.13em 0; padding:.15em .3em .33em; font-size:3.000em; border:1px solid #EEE;}
+.boardWrap #write li output span {position:relative; display:inline-block; margin:.4em .4em .3em 0; vertical-align:top; cursor:default;}
+.boardWrap #write li output span p {width:5em; height:5.6em; padding:.2em; text-align:center; word-break:break-all; text-overflow:ellipsis; overflow:hidden; background-color:#888; border:1px solid #EEE;}
+.boardWrap #write li output span p b {position:absolute; width:99%; top:.8em; left:0; color:#EEE; font-size:2.000em; text-transform:uppercase;}
+.boardWrap #write li output span div {position:absolute; opacity:0; top:0; width:100%; height:100%; color:#FFF; background-color:#000; text-align:right; transition:opacity 300ms;}
+.boardWrap #write li output span:hover div {opacity:0.6;}
+.boardWrap #write li output span div a {padding:.3em .5em; font-size:0.833em; font-weight:bold; color:#FFF; background-color:red;}
+
+/* content */
+.boardWrap #content article ul li {display:inline-block; width:100%; border-bottom:1px solid #E7E7E7; padding:1em 0 .8em; word-break:break-all;}
+.boardWrap #content article ul li:first-of-type {background-color:#FAFAFA; padding:1.1em 0 .9em;}
+.boardWrap #content article ul li strong {width:10%; display:inline-block; text-align:center; vertical-align:top; margin-top:.1em;}
+.boardWrap #content article ul li strong:first-of-type {width:15%;}
+.boardWrap #content article ul li span {display:inline-block;}
+.boardWrap #content article ul li span:not([class]) {width:83%;}
+.boardWrap #content article ul li img {padding-right:.2em;}
+.boardWrap #content section {margin:2em 1em; line-height:1.8; min-height:100px; word-break:break-all;}
+.boardWrap #content section img {max-width:100%; height:auto !important; -ms-interpolation-mode:bicubic;}
+.boardWrap #content section a img, .boardWrap #content section img[onclick] {margin-top:1em;}
+.boardWrap #SNS {float:right; padding:.3em 0;}
+.boardWrap #SNS a {float:left;}
+.boardWrap #member {clear:both; border-top:1px solid; border-bottom:1px solid; border-color:#E4E4E4; padding:1em; background-color:#F3F3F3;}
+.boardWrap #member ul > li {display:inline-block; vertical-align:top;}
+.boardWrap #member ul > li:nth-of-type(1) {width:120px; height:120px; text-align:center;}
+.boardWrap #member ul > li:nth-of-type(1) img {max-width:100%; max-height:100%; height:auto;}
+.boardWrap #member ul > li:nth-of-type(2) {margin-left:.5em;}
+.boardWrap #member ul > li:nth-of-type(2) ol li:before {content:"\2022 \20";}
+.boardWrap #member ul > li:nth-of-type(3) {margin-left:1em; width:68%; height:7.3em; text-align:justify; padding:1em; background-color:#FFF; border-radius:.5em;}
+.boardWrap #prevNext {clear:both; padding:.6em 0 .2em; border-top:1px solid #E7E7E7;}
+.boardWrap #prevNext dt {height:.2em; padding-top:.3em;}
+.boardWrap #prevNext dd {position:relative; top:-.2em; margin-left:5.6em;}
+
+/* comment */
+.boardWrap .cmtInfo {clear:both; margin-top:1em; padding:1em; background-color:#FFFDF9; border-top:1px solid #E7E7E7; border-bottom:1px solid #E7E7E7;}
+.boardWrap .comment {display:inline-block; width:100%; background-color:#FCFCFC;}
+.boardWrap .comment:not(:first-of-type) {border-top:1px solid #E7E7E7;}
+.boardWrap .comment:last-of-type {border-bottom:1px solid #E7E7E7;}
+.boardWrap .comment ul {margin:.6em;}
+.boardWrap .comment ul li {margin-left:.4em;}
+.boardWrap .comment ul li:first-of-type {margin-bottom:.6em;}
+.boardWrap .comment ul li:last-of-type {overflow-x:auto; word-break:break-all;}
+.boardWrap .comment ul li a[id], .boardWrap .comment ul li span[id] {position:relative; margin-top:.3em; font-weight:bold;}
+.boardWrap .comment ul li a[id] img, .boardWrap .comment ul li span[id] img {margin-top:-.5em;}
+.boardWrap .comment a:not([href]) {float:right; margin-left:.5em;}
+.boardWrap .comment .re {float:left; margin:1.8em .5em 0 0;}
+.boardWrap .comment .cmtPicture {float:left; margin:0 .6em .65em 0; border:1px solid #DDD;}
+.boardWrap .comment .cmtWriteday {margin:.2em .5em 0; font-size:0.917em;}
+.boardWrap #cmtAjaxRegist {clear:both;}
+
+/* delete */
+#middleContainer {position:relative; min-height:500px;}
+.boardWrap .outLine {border:1px solid #BBB; padding:5em 0;}
+.boardWrap .outLine ul {width:50%; margin:0 auto;}
+.boardWrap .outLine ul li p {margin:1em 0; height:1.8em; border-bottom:1px solid #EEE;}
+.boardWrap .outLine ul li label {float:left; width:5em; padding-top:.2em;}
+.boardWrap .outLine ul li div {margin-left:5em;}
+.boardWrap .outLine button {margin-top:1.5em; height:3em;}
+
+/* validation */
+.boardWrap #write span.error {margin-left:.3em;}
+.boardWrap #write div span.error {margin-left:0;}
+.boardWrap #cmtRegist .validate, .boardWrap #cmtAjaxRegist .validate {position:absolute;}
+.boardWrap #cmtRegist form div.validate span.error, .boardWrap #cmtAjaxRegist form div.validate span.error {clear:both; display:block; margin:0;}
+
+/* buttons */
+.boardWrap #cmtRegist, .boardWrap #cmtAjaxRegist {padding-top:1em;}
+.boardWrap #cmtRegist ol, .boardWrap #cmtAjaxRegist ol {margin:.6em;}
+.boardWrap #cmtRegist li, .boardWrap #cmtAjaxRegist li {margin-top:.3em;}
+.boardWrap #contentButton {clear:both; padding:1em 0 2.5em 0; border-top:1px solid #E7E7E7;}
+.boardWrap .comment button, .boardWrap #cmtRegist button {float:right; height:3.5em; margin-bottom:1em;}
+
+/* button */
+.boardWrap #btnArea {margin-top:.8em; text-align:center;}
+.boardWrap button {height:2em; padding:0 .7em 0 .3em; color:#333; background-color:#F9F9F9; border:1px solid #BBB; border-radius:.2em;}
+.boardWrap button:hover {background-color:#F0F0F0;}
+.boardWrap button.btnL {height:2.5em;}
+.btnList i {background-position:0 50%;}
+.btnWrite i, #sbmWrite i {background-position:-18px 50%;}
+#sbmSearch i {background-position:-36px 50%;}
+#btnRecomm i {background-position:-54px 50%;}
+#btnReport i {background-position:-72px 50%;}
+#btnTxt i {background-position:-90px 50%;}
+#btnPrint i {background-position:-108px 50%;}
+#btnReply i {background-position:-126px 50%;}
+#btnModify i {background-position:-144px 50%;}
+#btnRemove i {background-position:-161px 50%;}
+#btnComment i {background-position:-180px 50%;}
+#sbmRemove i {background-position:-54px 50%;}
+#btnBack i { background-position:-198px 50%;}
+
+/* Icon */
+.bicon {background:url("/Jsource/img/icons_default.png") no-repeat;}
+.arrow {width:4px; height:6px; background-position:0 0;}
+.re {width:8px; height:10px; background-position:-20px 0;}
+.file {width:12px; height:13px; background-position:-40px 0;}
+.image {width:14px; height:14px; background-position:-60px 0;}
+.link {width:14px; height:14px; background-position:-80px 0;}
+.secret {width:11px; height:13px; background-position:-100px 0;}
+.mobile {width:10px; height:14px; background-position:-120px 0;}
+.new {width:10px; height:9px; background-position:-140px 0;}
+.remove {width:10px; height:14px; background-position:-4px -20px;}
+.modify {width:12px; height:14px; background-position:-24px -20px;}
+.reply {width:10px; height:14px; background-position:-44px -20px;}
+.report {width:11px; height:14px; background-position:-64px -20px;}
+.facebook {width:26px; height:26px; background-position:0 -40px;}
+.twitter {width:26px; height:26px; background-position:-26px -40px;}
+.google {width:26px; height:26px; background-position:-52px -40px;}
