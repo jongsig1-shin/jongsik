@@ -1,0 +1,65 @@
+
+header nav, main, footer ul, #mainImg {display:block; margin:0 auto; width:1200px;}
+header, footer, #mainArea {min-width:1200px;}
+main nav {float:left; width:200px;}
+main > section {float:left; width:976px;}
+
+
+h1, h2, h3, h4 {letter-spacing:-.05em;}
+
+header {height:8.5em; margin-top:1em; border-bottom:1px solid #E5E5E5;}
+header nav {margin:0 auto; font-size:1.250em;}
+header nav a.topLogo {position:absolute; margin:2.7em .5em .5em 0; padding-bottom:17px; z-index:99;}
+header nav div:first-of-type {text-align:right; font-size:0.833em; font-weight:normal;}
+header nav div:last-of-type {position:relative; z-index:98;}
+header nav div:last-of-type h2 {font-size:1.167em;}
+header nav div:last-of-type {margin:1.7em -32px 0 -32px; padding:0 32px; text-align:right; background-color:#FFF;}
+header nav div:last-of-type ul li {display:inline-block; width:130px; vertical-align:top; text-align:center; background-color:#FFF; border:1px solid #FFF;}
+header nav div:last-of-type ul li a {display:block; padding:.7em 0;}
+
+main {font-size:1.083em;}
+main nav {padding:2em 0; text-align:center;}
+main nav h2 {text-align:left; padding:1em; margin-bottom:-2px; border:1px solid #E7E7E7; color:#FFF;}
+main nav ul li {text-align:left; margin-top:-1px; border:1px solid #E7E7E7;}
+main nav ul li a {display:block; padding:1em 1em 1em 1.5em;}
+main nav ul li a:hover {color:#FFF;}
+main nav ul li a.nowPage {font-size:1.083em; font-weight:bold;}
+main nav ul li span {position:relative; float:right; top:-.3em; width:20px; text-align:center; font-size:1.250em; color:#B5B5B5; font-weight:lighter;}
+
+main > section {margin-left:1.5em; padding:1.8em 0; line-height:1.5;}
+main > section > h1 {border-bottom:2px solid #888;}
+main > section > h1, main section > h2 {padding:0 0 .2em .2em; font-size:2.000em;}
+main > section > article {margin:1.8em 1em; font-size:1.167em;}
+main > section > article .skinWrap {font-size:0.857em;}
+
+footer {clear:both; padding:1em 0; border-top:1px solid #E5E5E5;}
+footer ul li a:link,
+footer ul li a:visited {color:#898989;}
+footer ul li p {margin-top:6px; color:#898989;}
+footer ul li p span {margin:0 .6em;}
+
+/* ============================================================
+   반응형 대응 (2026-08-31 추가)
+   이 레이아웃 파일은 원래 1200px 고정폭으로만 설계되어 있어서, 모바일에서
+   사이트 전체가 그대로 축소되어(핀치줌 해야 보이는 상태로) 보이는 근본 원인이었음.
+   — 모바일도 web 폴더로 강제 지정하면서, 반응형이었던 mobile.css 대신
+   이 고정폭 CSS를 그대로 받게 된 것이 문제.
+   1200px 이상(기존 PC 화면)은 위 스타일 그대로 완전히 동일하게 유지되고,
+   그 아래 폭에서만 유동폭 + 좌우 사이드바를 위아래로 쌓는 구조로 전환됨. ---- */
+@media (max-width: 1200px) {
+    header nav, main, footer ul, #mainImg {
+        width: 100% !important;
+    }
+    header, footer, #mainArea {
+        min-width: 0 !important;
+    }
+    main nav {
+        float: none !important;
+        width: auto !important;
+    }
+    main > section {
+        float: none !important;
+        width: auto !important;
+        margin-left: 0 !important;
+    }
+}
